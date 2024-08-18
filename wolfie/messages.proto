@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+message Message {
+    string topic = 1;
+    bytes payload = 2;
+}
+
+message Login {
+    string username = 1;
+    bool admin = 2;
+}
+
