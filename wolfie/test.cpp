@@ -1,26 +1,18 @@
 #include <iostream>
 #include <string>
+#include <optional>
 
-#include "../build/messages.pb.cc"
-
-void UserLogin() {
-    Message message;
-    message.set_topic("login");
-
-    Login login;
-    login.set_username("rosebud");
-    login.set_admin(true);
-
-    std::string payload;
-    login.SerializeToString(&payload);
-    message.set_payload(payload);
-
-    std::string serialized_message;
-    message.SerializeToString(&serialized_message);
-    
-    std::cout << "serialized message: " << serialized_message << std::endl;
-}
+#include "message.hpp"
+#include "message_queue.hpp"
 
 int main() {
-    UserLogin(); 
+    message_t msg("user_login", login_data_t("admin", 1).to_xml());
+    message_queue_t mq;
+    mq.enqueue(msg);
+    auto &retval = mq.dequeue();
+    if (retval) {
+        std::cout << retval.value() << std::endl;
+    }
+    return 0;
+
 }
