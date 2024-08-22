@@ -1,5 +1,7 @@
-CXXFLAGS = -std=c++17 -stdlib=libc++ -I./wolfie -I./xml 
+CXXFLAGS = -std=c++17 -stdlib=libc++ -E -I./wolfie -I./xml
 LDFLAGS = -L/opt/homebrew/lib
+CC=/opt/homebrew/Cellar/gcc/14.1.0_2/bin/gcc-14
+CXX=/opt/homebrew/Cellar/gcc/14.1.0_2/bin/g++-14
 
 # Directories
 SRC_DIRS = wolfie xml

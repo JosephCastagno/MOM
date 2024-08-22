@@ -6,10 +6,10 @@
 #include "message_queue.hpp"
 
 int main() {
-    message_t msg("user_login", login_data_t("admin", 1).to_xml());
+    message_t msg("pulse", pulse_data_t());
     message_queue_t mq;
     mq.enqueue(msg);
-    auto &retval = mq.dequeue();
+    auto retval = mq.dequeue();
     if (retval) {
         std::cout << retval.value() << std::endl;
     }
