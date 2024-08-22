@@ -34,29 +34,24 @@ struct pulse_data_t {
     }
 }; // pulse_data_t 
 
-struct login_data_t {
-    std::string m_username;
-    bool m_is_admin;
+struct shutdown_data_t {
+    std::string m_trigger;
 
-    login_data_t(std::string s, bool admin) 
-        : m_username(std::move(s)), m_is_admin(admin) {}
+    shutdown_data_t(std::string trigger) : m_trigger(std::move(trigger)) {}
 
     std::string to_xml() const {
         pugi::xml_document doc;
 
-        pugi::xml_node login_node = doc.append_child("Login");
-        login_node.append_attribute("admin") = m_is_admin ? "1" : "0";
-        login_node.append_attribute("username") = m_username.c_str();
+        pugi::xml_node sdown_node = doc.append_child("Shutdown");
+        sdown_node.append_attribute("trigger") = m_trigger.c_str();
 
         std::ostringstream oss;
         doc.save(oss, "", pugi::format_no_declaration);
-
         return oss.str();
     }
+}; // shutdown_data_t
 
-}; // login_data_t
-
-using message_data_t = std::variant<login_data_t, pulse_data_t>;
+using message_data_t = std::variant<pulse_data_t, shutdown_data_t>;
 struct message_t {
     std::string m_topic;
     message_data_t m_data;
@@ -88,4 +83,4 @@ std::ostream& operator<<(std::ostream& os, const message_t& message) {
             os << data.to_xml();
         }, message.m_data);
     return os;
-}
+} // message_t
