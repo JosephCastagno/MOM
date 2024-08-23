@@ -1,6 +1,6 @@
-#include "actor.hpp"
-
 #include <iostream>
+
+#include "actor.hpp"
 
 actor_t::actor_t(std::string name) 
     : m_name(std::move(name)), m_running(false) {}
@@ -11,11 +11,11 @@ actor_t::~actor_t() {
     }
 }
 
-void actor_t::operator()(const pulse_data_t &data) {
+void actor_t::handle_pulse(const pulse_data_t &data) {
     std::cout << "received pulse" << m_name << std::endl;
 }
 
-void actor_t::operator()(const shutdown_data_t &data) {
+void actor_t::handle_shutdown(const shutdown_data_t &data) {
     std::cout << "received shutdown" << std::endl;
     m_running = false;
 }
@@ -23,8 +23,12 @@ void actor_t::operator()(const shutdown_data_t &data) {
 void actor_t::consume() {
     while (m_running) {
         message_t msg = m_msg_queue.dequeue();
-        std::visit([this](auto&& data) { this->operator()(data); },
-                   msg.m_data);
+        if (msg.m_topic == "pulse") {
+            handle_pulse(msg_utils::deserialize_msg<pulse_data_t>(msg.m_data));
+        } else if (msg.m_topic == "shutdown") {
+            handle_shutdown(
+                msg_utils::deserialize_msg<shutdown_data_t>(msg.m_data));
+        }
     }
 }
 

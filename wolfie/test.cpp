@@ -5,8 +5,8 @@
 #include <chrono>
 
 #include "actor.hpp"
-#include "message.hpp"
 #include "message_queue.hpp"
+#include "../msg/message.hpp"
 
 int main() {
     auto first = std::make_shared<actor_t>("first");
@@ -19,13 +19,15 @@ int main() {
     while (first->is_running() || second->is_running()) {
         std::this_thread::sleep_for(std::chrono::seconds(1));
 
-        first->enqueue(message_t("pulse", pulse_data_t()));
-        second->enqueue(message_t("pulse", pulse_data_t()));
+        first->enqueue(message_t("pulse", pulse_data_t().serialize()));
+        second->enqueue(message_t("pulse", pulse_data_t().serialize()));
         if (count++ == 10) {
-            first->enqueue(message_t("shutdown", shutdown_data_t("main")));
+            first->enqueue(
+                message_t("shutdown", shutdown_data_t("main").serialize()));
         }
         if (count++ > 20) {
-            second->enqueue(message_t("shutdown", shutdown_data_t("main")));
+            second->enqueue(
+                message_t("shutdown", shutdown_data_t("main").serialize()));
         }
     }
 

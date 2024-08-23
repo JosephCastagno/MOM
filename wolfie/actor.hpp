@@ -12,8 +12,8 @@ class actor_t {
      std::atomic<bool> m_running;
      std::thread m_worker;
 
-     void operator()(const pulse_data_t& data);
-     void operator()(const shutdown_data_t& data);
+     void handle_pulse(const pulse_data_t& data);
+     void handle_shutdown(const shutdown_data_t& data);
      void consume();
 
  public:

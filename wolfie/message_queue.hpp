@@ -6,7 +6,7 @@
 #include <optional>
 #include <queue>
 
-#include "message.hpp"
+#include "../msg/message.hpp"
 
 class message_queue_t {
  private:

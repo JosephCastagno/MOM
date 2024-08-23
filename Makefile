@@ -1,34 +1,24 @@
-CXXFLAGS = -std=c++17 -stdlib=libc++ -E -I./wolfie -I./xml
-LDFLAGS = -L/opt/homebrew/lib
-CC=/opt/homebrew/Cellar/gcc/14.1.0_2/bin/gcc-14
+# Compiler command
 CXX=/opt/homebrew/Cellar/gcc/14.1.0_2/bin/g++-14
+CXXFLAGS=-std=c++17 -I/opt/homebrew/include -I./wolfie -I./xml
+LDFLAGS=-L/opt/homebrew/lib -lboost_system -lboost_thread-mt
 
-# Directories
-SRC_DIRS = wolfie xml
-BUILD_DIR = build
+# Directories containing the source files
+SRC_DIRS=wolfie xml msg
 
-# Source files
-CPP_FILES = $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.cpp))
-OBJ_FILES = $(patsubst $(SRC_DIRS)/%.cpp, $(BUILD_DIR)/%.o, $(CPP_FILES))
+# Find all .cpp files in the source directories
+SOURCES=$(wildcard $(foreach dir, $(SRC_DIRS), $(dir)/*.cpp))
 
-# Output binary
-TARGET = $(BUILD_DIR)/mware
+# Target output
+TARGET=build/mware
 
 # Default rule
 all: $(TARGET)
 
-# Rule to compile the target
-$(TARGET): $(OBJ_FILES)
-	$(CXX) $(OBJ_FILES) -o $@ $(LDFLAGS)
-
-# Rule to compile C++ source files
-$(BUILD_DIR)/%.o: $(SRC_DIRS)/%.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+# Rule to build the target directly
+$(TARGET):
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(SOURCES) -o $(TARGET)
 
 # Clean rule
 clean:
-	rm -rf $(BUILD_DIR)/*
-
-# Phony targets
-.PHONY: all clean
-
+	rm -rf $(TARGET)
