@@ -77,7 +77,7 @@ struct message_t {
     }
 }; // message_t
 
-std::ostream& operator<<(std::ostream& os, const message_t& message) {
+inline std::ostream& operator<<(std::ostream& os, const message_t& message) {
     os << message.m_topic << "\n";
     std::visit([&os](auto&& data) {
             os << data.to_xml();
