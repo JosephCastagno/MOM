@@ -1,0 +1,78 @@
+# Ignore binary files
+*.exe
+*.out
+*.dll
+*.so
+*.dylib
+
+# Ignore object files and other intermediates
+*.o
+*.obj
+*.lo
+*.ko
+*.a
+*.lib
+
+# Ignore debug files
+*.gch
+*.pch
+*.pdb
+*.ilk
+
+# Ignore IDE-specific files
+# Visual Studio
+.vscode/
+*.user
+*.suo
+*.opensdf
+*.sdf
+*.sln
+*.vcxproj
+*.vcxproj.filters
+
+# CLion
+.idea/
+cmake-build-debug/
+cmake-build-release/
+
+# Xcode
+*.xcworkspace/
+*.xcuserdata/
+*.xcuserstate
+*.xcodeproj/
+
+# CMake specific
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+Makefile
+build/
+
+# Ignore other editor specific files
+*.swp
+*.swo
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+
+# Ignore coverage reports
+*.gcda
+*.gcno
+*.gcov
+
+# Ignore OS-specific files
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Linux
+*~
