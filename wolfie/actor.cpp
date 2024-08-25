@@ -20,6 +20,8 @@ void actor_t::handle_shutdown(const shutdown_data_t &data) {
     m_running = false;
 }
 
+// instead of handling message type checking here, just pass the message to a 
+// virtual general messasge handler 
 void actor_t::consume() {
     while (m_running) {
         message_t msg = m_msg_queue.dequeue();
@@ -33,6 +35,10 @@ void actor_t::consume() {
 }
 
 void actor_t::start() {
+    if (m_running) {
+        return;
+    }
+
     m_running = true;
     m_worker = std::thread([this] { consume(); });
 }

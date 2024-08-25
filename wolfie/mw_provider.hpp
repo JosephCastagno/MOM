@@ -1,18 +1,28 @@
-#include <iostream>
-#include <string>
-#include <thread>  // ?
-#include <unordered_set>
+#pragma once
+
 #include <boost/asio.hpp>
+#include <mutex>
 
-#include "actor.hpp"
+#include "message_queue.hpp"
 
-using boost::asio::ip::tcp;
-
-class mw_provier_t : public actor_t {
+class mw_provider_t { 
  private:
-     void receive_messages(); 
+     message_queue_t& m_msg_queue;
+     std::thread m_worker; 
+     boost::asio::io_context m_io_context;
+     boost::asio::ip::tcp::socket m_socket;
+     bool m_running;
+     std::mutex m_socket_mutex;
+
+     void receive_msgs(); 
+     void async_read_msg();
+     void send_msg_with_header(const std::string &msg);
 
  public:
-     mw_provider_t(std::string name) : actor_t(std::move(name)) {}
+     mw_provider_t(message_queue_t &msg_q, const std::string &ip, int port);
+     ~mw_provider_t();
 
+     void subscribe(const std::string &topic); 
+     void unsubscribe(const std::string &data);
+     void publish(const message_t &msg);
 }; // mw_provider_t

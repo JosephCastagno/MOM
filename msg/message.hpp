@@ -3,6 +3,7 @@
 #include <chrono>
 #include <ctime>
 #include <iomanip>
+#include <iostream>
 #include <string>
 #include <sstream>
 #include <variant>
@@ -42,6 +43,7 @@ struct message_t {
 
     message_t(std::string topic, std::string data)
         : m_topic(std::move(topic)), m_data(std::move(data)) {}
+    message_t() = default;
 
     std::string serialize() const {
         pugi::xml_document doc;
@@ -51,14 +53,48 @@ struct message_t {
         message_node.append_child("Topic").text().set(m_topic.c_str());
 
         // data
-        pugi::xml_node data_node = doc.append_child("Data");
+        pugi::xml_node data_node = message_node.append_child("Data");
         data_node.append_buffer(m_data.c_str(), m_data.size());
 
         std::ostringstream oss;
         doc.save(oss, "", pugi::format_no_declaration);
         return oss.str();
     }
+
+    static message_t deserialize(const std::string &xml) {
+        message_t result;
+        const auto [doc, node] = 
+            msg_utils::string_to_xml(xml, "Message");
+
+        pugi::xml_node topic_node = node.child("Topic");
+        if (!topic_node) {
+            throw std::runtime_error("mismatched topic / data");
+        }
+        result.m_topic = topic_node.child_value();
+
+        pugi::xml_node data_node = node.child("Data");
+        if (!data_node) {
+            throw std::runtime_error("mismatched topic / data");
+        }
+
+        std::ostringstream oss;
+        for (pugi::xml_node child : data_node.children()) {
+            child.print(oss, 
+                        "", 
+                        pugi::format_no_declaration | pugi::format_raw);
+        }
+        result.m_data = oss.str(); 
+
+        return result;
+    }
+
 }; // message_t
+
+inline std::ostream& operator<<(std::ostream &os, const message_t &msg) {
+    os << "topic: " << msg.m_topic << "\n";
+    os << "data: " << msg.m_data << std::endl;
+    return os;
+}
 
 struct pulse_data_t {
     std::chrono::time_point<std::chrono::system_clock> m_timestamp;
