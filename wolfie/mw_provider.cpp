@@ -102,18 +102,15 @@ void mw_provider_t::publish(const message_t &msg) {
 void mw_provider_t::send_msg_with_header(const std::string &msg) {
     uint32_t msg_length_no = htonl(static_cast<uint32_t>(msg.size()));
     std::vector<boost::asio::const_buffer> bufs;
-    bufs.push_back(boost::asio::buffer(&msg_length_no, sizeof(msg_length_no)));
-    bufs.push_back(boost::asio::buffer(msg));
-    std::cout << msg << std::endl;
-    std::cout << msg.size() << std::endl;
-
+    bufs.emplace_back(
+        boost::asio::buffer(&msg_length_no, sizeof(msg_length_no)));
+    bufs.emplace_back(boost::asio::buffer(msg));
     boost::asio::async_write(m_socket, bufs,
-        [](const boost::system::error_code &ec, std::size_t size) {
+        [](const boost::system::error_code &ec, std::size_t _) {
             if (ec) {
                 std::cerr << "error sending msg: ";
                 std::cerr << ec.message() << std::endl;
             }
-            std::cout << size << " bytes transfered" << std::endl;
         }
     );
 }

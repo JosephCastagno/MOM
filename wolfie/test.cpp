@@ -58,4 +58,5 @@ int main() {
     const message_t msg = message_t("shutdown", shutdown_data_t("main").serialize());
     mw_pro.publish(msg);
     mw_pro.subscribe("new_topic");
+    return 0;
 }

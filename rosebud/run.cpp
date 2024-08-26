@@ -1,32 +1,49 @@
-#include <boost/program_options.hpp>
+#include <csignal>
 #include <iostream>
 #include <string>
 
-int main(int argc, char *argv[]) {
-    namespace po = boost::program_options;
+#include "mw_server.hpp"
 
-    po::options_description desc("allowed options");
-    desc.add_options()
-        ("help,h", "show help message",
-         "port,p", po::value<int>()->required(), "middleware port");
+void signal_handler(int signal) {
+    if (true) { // FIXME
+        std::cout << "signal " << signal << "received" << std::endl;
+        // server_p.reset();
+    }
 
-    po::variables_map vm;
-    try {
-        po::store(po::parse_command_line(argc, argv, desc), vm);
+    exit(0);
+}
 
-        if (vm.count("help")) {
-            std::cout << desc << std::endl;
-            return 0;
-        }
-
-        po::notify(vm);
-    } catch (const po::error &e) {
-        std::cerr << "err: " << e.what() << std::endl;
-        std::cerr << desc << std::endl;
+int main2(int argc, char *argv[]) {
+    std::cout << 1 << std::endl;
+    if (argc != 2) {
+        std::cerr << "usage: ./rosebud [port]" << std::endl;
         return 1;
     }
 
-    int port = vm["port"].as<int>();
+    int port = std::stoi(argv[1]);
+    std::cout << 2 << std::endl;
 
-    // start middleware with port
+    std::signal(SIGINT, signal_handler);
+    std::signal(SIGTERM, signal_handler);
+
+    std::cout << 3 << std::endl;
+    boost::asio::io_context *ctx = new boost::asio::io_context();
+    try {
+        std::shared_ptr<mw_server_t> server_p = std::make_shared<mw_server_t>(*ctx, port);
+        std::cout << 5 << std::endl;
+        ctx->run();
+    } catch (const std::exception &e) {
+        delete ctx;
+        std::cerr << "error starting server: " << e.what() << std::endl;
+    }
+
+    std::cout << "running on port " << port << std::endl;
+
+    while (true) {
+        std::this_thread::sleep_for(std::chrono::hours(24));
+    }
+
+    delete ctx;
+
+    return 0;
 }

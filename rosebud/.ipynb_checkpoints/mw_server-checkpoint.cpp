@@ -6,12 +6,13 @@
 #include "mw_server.hpp"
 
 
-mw_server_t::mw_server_t(boost::asio::io_context &ctx, const int port) 
-    : m_io_context(ctx), 
-      m_acceptor(m_io_context, tcp::endpoint(tcp::v4(), port))
+mw_server_t::mw_server_t(const int port) 
+    : m_io_context()
 {
     std::cout << "initializing" << std::endl;
-    start_accept();
+    m_acceptor = tcp::acceptor(m_io_context, tcp::endpoint(tcp::v4(), port));
+    // start_acceptor();
+    m_io_context.run();
 }
 
 mw_server_t::~mw_server_t() {
@@ -29,7 +30,7 @@ mw_server_t::~mw_server_t() {
     }
 }
 
-void mw_server_t::start_accept() {
+void mw_server_t::start_acceptor() {
     std::cout << " now accepting " << std::endl;
     socket_p new_socket = std::make_shared<tcp::socket>(m_io_context);
     std::cout << "created a new sock ptr" << std::endl;
@@ -40,7 +41,7 @@ void mw_server_t::start_accept() {
             if (!ec) {
                 handle_client(new_socket);
             }
-            start_accept();
+            start_acceptor();
         }
     );
 }
@@ -98,7 +99,7 @@ void mw_server_t::handle_msg(const std::string &msg, socket_p sock)
 {
     if (msg.starts_with("subscribe")) {
         const std::string topic = msg.substr(msg.find(',') + 1);
-       m_topic_to_subscribers[topic].insert(sock);
+        m_topic_to_subscribers[topic].insert(sock);
         return;
     }
 
