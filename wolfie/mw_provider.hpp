@@ -15,7 +15,7 @@ class mw_provider_t {
      std::mutex m_socket_mutex;
 
      void receive_msgs(); 
-     void async_read_msg();
+     void read_msg();
      void send_msg_with_header(const std::string &msg);
 
  public:

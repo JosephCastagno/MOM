@@ -32,4 +32,10 @@ class message_queue_t {
          m_queue.pop();
          return msg; 
      }
+
+     bool empty() {
+         std::lock_guard<std::mutex> lock(m_mutex);
+         return m_queue.empty();
+     }
+             
 };

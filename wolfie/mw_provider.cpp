@@ -9,7 +9,10 @@ using boost::asio::ip::tcp;
 mw_provider_t::mw_provider_t(message_queue_t &msg_q, 
                              const std::string &ip, 
                              const int port)
-    : m_msg_queue(msg_q), m_io_context(), m_socket(m_io_context), m_running(true)
+    : m_msg_queue(msg_q), 
+      m_io_context(), 
+      m_socket(m_io_context), 
+      m_running(true)
 {
     try {
         tcp::resolver resolver(m_io_context);
@@ -19,59 +22,62 @@ mw_provider_t::mw_provider_t(message_queue_t &msg_q,
     } catch (const std::exception &e) {
         std::cerr << "mw_provider_t initialization failed: ";
         std::cerr << e.what() << std::endl;
-        throw;
+        throw; // maybe just don't do any error handling here
     }
+
+    std::cout << "client created" << std::endl;
 }
 
 mw_provider_t::~mw_provider_t() {
+    std::cout << "client destroyed" << std::endl;
     m_running = false;
+    if (m_socket.is_open()) {
+        m_socket.close();
+    }
+
     m_io_context.stop();
-    m_socket.close();
+
     if (m_worker.joinable()) {
         m_worker.join();
     }
 }
 
 void mw_provider_t::receive_msgs() {
-    async_read_msg();
+    m_io_context.reset();
+    read_msg();
     m_io_context.run();
 }
 
-void mw_provider_t::async_read_msg() {
-    auto msg_length_buf = 
-        std::make_shared<std::array<char, sizeof(uint32_t)>>();
-    auto msg_buf =
-        std::make_shared<std::vector<char>>();
+void mw_provider_t::read_msg() {
+    auto msg_len_buf = std::make_shared<std::array<char, sizeof(uint32_t)>>();
+    auto msg_buf = std::make_shared<std::vector<char>>();
 
     // lambda callback for message read 
     auto msg_callback = [this, msg_buf]
         (boost::system::error_code ec, std::size_t _)
     {
         if (ec) {
-            std::cerr << "error reading msg: ";
-            std::cerr << ec.message() << std::endl;
+            std::cerr << "error reading msg: " << ec.message() << std::endl;
             return;
         }
 
         std::string message(msg_buf->begin(), msg_buf->end());
         message_t msg = message_t::deserialize(message);
         m_msg_queue.enqueue(msg);
-        async_read_msg();
+        read_msg();
     };
 
     // lambda callback for length read 
-    auto length_callback = [this, msg_length_buf, msg_buf, msg_callback]
+    auto length_callback = [this, msg_len_buf, msg_buf, msg_callback]
         (boost::system::error_code ec, std::size_t _) 
     {
         if (ec) {
-            std::cerr << "error reading msg length: ";
-            std::cerr << ec.message() << std::endl;
+            std::cerr << "error reading msg len: " << ec.message() << std::endl;
             return;
         }
 
-        uint32_t msg_length_no = *reinterpret_cast<uint32_t*>(
-            msg_length_buf->data());
-        uint32_t msg_length = ntohl(msg_length_no);
+        uint32_t msg_len_no = *reinterpret_cast<uint32_t*>(msg_len_buf->data());
+        uint32_t msg_length = ntohl(msg_len_no);
         msg_buf->resize(msg_length);
 
         boost::asio::async_read(m_socket, 
@@ -80,7 +86,7 @@ void mw_provider_t::async_read_msg() {
     };
 
     boost::asio::async_read(m_socket, 
-                            boost::asio::buffer(*msg_length_buf),
+                            boost::asio::buffer(*msg_len_buf),
                             length_callback);
 }
 

@@ -52,11 +52,23 @@ int main() {
     const int port = 8080;
 
 
-    message_queue_t msg_q;
+    message_queue_t msg_q1;
+    message_queue_t msg_q2;
     std::cout << "initializing mw pro" << std::endl;
-    mw_provider_t mw_pro = mw_provider_t(msg_q, ip, port);
-    const message_t msg = message_t("shutdown", shutdown_data_t("main").serialize());
-    mw_pro.publish(msg);
-    mw_pro.subscribe("new_topic");
+    mw_provider_t mw_pro_one = mw_provider_t(msg_q1, ip, port);
+    mw_provider_t mw_pro_two = mw_provider_t(msg_q2, ip, port);
+    
+    message_t pulse = message_t("pulse", pulse_data_t().serialize());
+
+    mw_pro_one.subscribe("pulse");
+    mw_pro_two.publish(pulse);
+
+    while (msg_q1.empty()) {
+        continue;
+    }
+
+    message_t msg = msg_q1.dequeue();
+    std::cout << "subscriber received: " << std::endl;
+    std::cout << msg << std::endl;
     return 0;
 }

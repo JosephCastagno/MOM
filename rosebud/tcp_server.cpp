@@ -77,7 +77,7 @@ class tcp_server {
 };
 
 
-int main() {
+int main3() {
     try {
         boost::asio::io_context io_context;
         tcp_server server(io_context);
