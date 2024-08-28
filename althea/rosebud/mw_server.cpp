@@ -4,19 +4,15 @@
 #include "mw_server.hpp"
 #include "tcp_conn.hpp"
 
-const message_t msg = message_t("shutdown", shutdown_data_t("test", "main"));
-
 mw_server_t::mw_server_t(const int port) 
     : m_io_context(), 
       m_acceptor(m_io_context, tcp::endpoint(tcp::v4(), port))
 {
-    std::cout << "server constructed" << std::endl;
     start_accept();
     m_io_context.run();
 }
 
 mw_server_t::~mw_server_t() {
-    std::cout << "server destroyed" << std::endl;
     m_acceptor.close();
     m_io_context.stop(); 
 }
@@ -41,7 +37,6 @@ void mw_server_t::handle_accept(std::shared_ptr<tcp_conn_t> new_conn,
 }
 
 void mw_server_t::read_msg(std::shared_ptr<tcp_conn_t> conn) {
-    std::cout << 4 << std::endl;
     auto msg_len_buf = std::make_shared<std::array<char, sizeof(uint32_t)>>();
     auto msg_buf = std::make_shared<std::vector<char>>();
 
@@ -49,7 +44,6 @@ void mw_server_t::read_msg(std::shared_ptr<tcp_conn_t> conn) {
         (const boost::system::error_code &ec, std::size_t _)
     {
         if (ec) {
-            disconnect(conn); // if there is an error, should we disconnect the client?
             return;
         }
 
@@ -62,7 +56,6 @@ void mw_server_t::read_msg(std::shared_ptr<tcp_conn_t> conn) {
         (const boost::system::error_code &ec, std::size_t _)
     {
         if (ec) {
-            disconnect(conn);
             return;
         }
 
@@ -85,7 +78,6 @@ void mw_server_t::read_msg(std::shared_ptr<tcp_conn_t> conn) {
 void mw_server_t::handle_msg(const std::string &msg, 
                              std::shared_ptr<tcp_conn_t> conn)
 {
-    std::cout << 3 << std::endl;
     if (msg.starts_with("subscribe")) {
         const std::string topic = msg.substr(msg.find(',') + 1);
         m_topic_to_subs[topic].insert(conn);
@@ -110,7 +102,6 @@ void mw_server_t::handle_msg(const std::string &msg,
 }
 
 void mw_server_t::forward_msg(const std::string &msg) {
-    std::cout << 2 << std::endl;
     const std::string topic = message_t(msg).m_topic;
     auto it = m_topic_to_subs.find(topic);
     if (it == m_topic_to_subs.end()) {
@@ -120,16 +111,5 @@ void mw_server_t::forward_msg(const std::string &msg) {
     auto subs = it->second;
     for (auto sub : subs) {
         sub->write(msg);
-    }
-}
-
-void mw_server_t::disconnect(std::shared_ptr<tcp_conn_t> conn) {
-    return;
-    std::cout << 1 << std::endl;
-    for (auto &[topic, subs] : m_topic_to_subs) {
-        subs.erase(conn);
-        if (subs.empty()) {
-            m_topic_to_subs.erase(topic);
-        }
     }
 }

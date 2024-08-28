@@ -4,6 +4,7 @@
 #include <thread>
 
 #include "message_queue.hpp"
+#include "mw_provider.hpp"
 
 class actor_t {
  protected:
@@ -11,13 +12,14 @@ class actor_t {
      message_queue_t m_msg_queue;
      std::atomic<bool> m_running;
      std::thread m_worker;
+     mw_provider_t m_mw_pro;
 
-     void handle_pulse(const pulse_data_t& data);
-     void handle_shutdown(const shutdown_data_t& data);
      void consume();
-
+     void shutdown();
+     virtual void handle_message(const message_t &msg) = 0;
+     virtual void mw_setup() = 0;
  public:
-     actor_t(std::string name);
+     actor_t(std::string name, const std::string &ip, const int port);
      ~actor_t();
 
      void start();

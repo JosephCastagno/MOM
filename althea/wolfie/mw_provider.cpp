@@ -90,6 +90,12 @@ void mw_provider_t::read_msg() {
                             length_callback);
 }
 
+void mw_provider_t::subscribe(const std::vector<std::string> &topics) {
+    for (auto &topic : topics) {
+        subscribe(topic);
+    }
+}
+
 void mw_provider_t::subscribe(const std::string &topic) {
     const std::string sub = "subscribe," + topic;
     send_msg_with_header(sub);
