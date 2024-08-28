@@ -26,10 +26,9 @@ void actor_t::consume() {
     while (m_running) {
         message_t msg = m_msg_queue.dequeue();
         if (msg.m_topic == "pulse") {
-            handle_pulse(msg_utils::deserialize_msg<pulse_data_t>(msg.m_data));
+            handle_pulse(pulse_data_t(msg.m_data));
         } else if (msg.m_topic == "shutdown") {
-            handle_shutdown(
-                msg_utils::deserialize_msg<shutdown_data_t>(msg.m_data));
+            handle_shutdown(shutdown_data_t(msg.m_data));
         }
     }
 }

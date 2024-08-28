@@ -4,7 +4,7 @@
 #include "mw_server.hpp"
 #include "tcp_conn.hpp"
 
-const message_t msg = message_t("shutdown", shutdown_data_t("test").serialize());
+const message_t msg = message_t("shutdown", shutdown_data_t("test", "main"));
 
 mw_server_t::mw_server_t(const int port) 
     : m_io_context(), 
@@ -111,7 +111,7 @@ void mw_server_t::handle_msg(const std::string &msg,
 
 void mw_server_t::forward_msg(const std::string &msg) {
     std::cout << 2 << std::endl;
-    const std::string topic = message_t::deserialize(msg).m_topic;
+    const std::string topic = message_t(msg).m_topic;
     auto it = m_topic_to_subs.find(topic);
     if (it == m_topic_to_subs.end()) {
         return;

@@ -62,7 +62,7 @@ void mw_provider_t::read_msg() {
         }
 
         std::string message(msg_buf->begin(), msg_buf->end());
-        message_t msg = message_t::deserialize(message);
+        message_t msg = message_t(message);
         m_msg_queue.enqueue(msg);
         read_msg();
     };

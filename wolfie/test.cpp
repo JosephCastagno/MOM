@@ -10,43 +10,6 @@
 
 #include "mw_provider.hpp"
 
-int main2() {
-    if (false) {
-    auto first = std::make_shared<actor_t>("first");
-    auto second = std::make_shared<actor_t>("second");
-
-    first->start();
-    second->start();
-
-    int count = 0;
-    while (first->is_running() || second->is_running()) {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-
-        first->enqueue(message_t("pulse", pulse_data_t().serialize()));
-        second->enqueue(message_t("pulse", pulse_data_t().serialize()));
-        if (count++ == 10) {
-            first->enqueue(
-                message_t("shutdown", shutdown_data_t("main").serialize()));
-        }
-        if (count++ > 20) {
-            second->enqueue(
-                message_t("shutdown", shutdown_data_t("main").serialize()));
-        }
-    }
-    }
-
-    const message_t msg = message_t("shutdown", shutdown_data_t("main").serialize());
-    std::cout << msg << std::endl;
-    std::string serialized = msg.serialize();
-
-    const message_t deserial = message_t::deserialize(serialized);
-    std::cout << deserial << std::endl;
-
-    return 0;
-
-}
-
-
 int main() {
     const std::string ip = "127.0.0.1";
     const int port = 8080;
@@ -58,7 +21,7 @@ int main() {
     mw_provider_t mw_pro_one = mw_provider_t(msg_q1, ip, port);
     mw_provider_t mw_pro_two = mw_provider_t(msg_q2, ip, port);
     
-    message_t pulse = message_t("pulse", pulse_data_t().serialize());
+    message_t pulse = message_t("pulse", pulse_data_t());
 
     mw_pro_one.subscribe("pulse");
     mw_pro_two.publish(pulse);
@@ -69,6 +32,8 @@ int main() {
 
     message_t msg = msg_q1.dequeue();
     std::cout << "subscriber received: " << std::endl;
-    std::cout << msg << std::endl;
+    std::cout << msg.serialize() << std::endl;
+
+    std::cout << "non subscriber queue length: " << !msg_q2.empty() << std::endl;
     return 0;
 }
