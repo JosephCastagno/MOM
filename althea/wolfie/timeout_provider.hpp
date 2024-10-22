@@ -14,7 +14,7 @@ class timeout_provider_t {
      std::thread m_worker;
 
  public:
-     timeout_provider_t(message_queue &, const int);
+     timeout_provider_t(message_queue_t &, const int);
      ~timeout_provider_t();
 
      void run();

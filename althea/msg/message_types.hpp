@@ -94,7 +94,7 @@ struct heartbeat_data_t : public message_data_t {
        m_hbeat_ts(std::move(std::chrono::system_clock::now()))
     {}
 
-    hbeat_data_t(const std::string &xml) {
+    heartbeat_data_t(const std::string &xml) {
         const auto [doc, data_node] = 
              msg_utils::string_to_xml(xml, "Heartbeat");
          
@@ -113,7 +113,7 @@ struct heartbeat_data_t : public message_data_t {
 
         std::string hbeat_ts_str = data_node.attribute("hbeat_ts").value();
         std::tm hbeat_tm = {};
-        std::istringstream ss(hbeat_ts_str);
+        ss.str(hbeat_ts_str);
         ss >> std:: get_time(&hbeat_tm, "%Y-%m-%d %H:%M:%S");
 
         if (ss.fail()) {
@@ -135,15 +135,15 @@ struct heartbeat_data_t : public message_data_t {
 
         std::stringstream ss;
         ss << std::put_time(pulse_tm, "%Y-%m-%d %H:%M:%S");
-        pulse_node.append_attribute("pulse_ts") = ss.str().c_str();
+        hbeat_node.append_attribute("pulse_ts") = ss.str().c_str();
 
         const std::time_t hbeat_ts = 
             std::chrono::system_clock::to_time_t(m_hbeat_ts);
         const std::tm* hbeat_tm = std::localtime(&hbeat_ts);
 
-        std::stringstream ss;
+        ss.str("");
         ss << std::put_time(hbeat_tm, "%Y-%m-%d %H:%M:%S");
-        pulse_node.append_attribute("hbeat_ts") = ss.str().c_str();
+        hbeat_node.append_attribute("hbeat_ts") = ss.str().c_str();
 
         std::ostringstream oss;
         doc.save(oss, "", pugi::format_no_declaration);
@@ -164,7 +164,7 @@ struct market_data_t : public message_data_t {
      : m_symbol(sym), m_price(price), m_timestamp(std::move(ts))
     {}
 
-    market_data_t(const std::string &xml) const {
+    market_data_t(const std::string &xml) {
         const auto [doc, data_node] = 
             msg_utils::string_to_xml(xml, "Market Data");
         m_symbol = data_node.attribute("symbol").value();
@@ -173,7 +173,7 @@ struct market_data_t : public message_data_t {
         std::string ts_str = data_node.attribute("timestamp").value();
         std::tm tm = {};
         std::istringstream ss(ts_str);
-        ss >> std:: get_time(&tm, "%Y-%m-%d %H:%M:%S");
+        ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
 
         if (ss.fail()) {
             throw std::runtime_error(
@@ -181,7 +181,7 @@ struct market_data_t : public message_data_t {
         }
 
         m_timestamp = std::chrono::system_clock::from_time_t(
-            std::mktime(&ts_str));
+            std::mktime(&tm));
     }
 
     std::string serialize() const {
@@ -196,7 +196,7 @@ struct market_data_t : public message_data_t {
         const std::tm* tm = std::localtime(&ts);
         std::stringstream ss;
         ss << std::put_time(tm, "%Y-%m-%d %H:%M:%S");
-        pulse_node.append_attribute("timestamp") = ss.str().c_str();
+        mkt_data_node.append_attribute("timestamp") = ss.str().c_str();
 
         std::ostringstream oss;
         doc.save(oss, "", pugi::format_no_declaration);
@@ -216,7 +216,7 @@ struct order_data_t : public message_data_t {
                  const std::string sym,
                  int price,
                  uint32_t quantity)
-    : m_pariticipant(participant), 
+    : m_participant(participant), 
       m_symbol(sym), 
       m_price(price), 
       m_quantity(quantity)
@@ -246,7 +246,4 @@ struct order_data_t : public message_data_t {
         doc.save(oss, "", pugi::format_no_declaration);
         return oss.str();
     }
-} // order_data_t
-
-
-
+}; // order_data_t

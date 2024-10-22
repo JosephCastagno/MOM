@@ -20,19 +20,19 @@ void timeout_provider_t::run() {
         }
 
         message_t alert_msg = message_t("alert", "");
-        m_msg_queue.enqueue(msg);
+        m_msg_queue.enqueue(alert_msg);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(m_ts));
     }
 }
 
-void timeout_provider::pause() {
+void timeout_provider_t::pause() {
     if (!m_paused) {
         m_paused = true;
     }
 }
 
-void timeout_provider::resume() {
+void timeout_provider_t::resume() {
     if (m_paused) {
         m_paused = false;
     }
