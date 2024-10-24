@@ -21,13 +21,15 @@ class mw_server_t {
      std::unordered_map<std::string, 
                         std::unordered_set<std::shared_ptr<tcp_conn_t>>> 
          m_topic_to_subs;
+     std::unordered_map<int, std::shared_ptr<tcp_conn_t>>
+         m_id_to_conn;
 
      void start_accept();
      void handle_accept(std::shared_ptr<tcp_conn_t>,
                         const boost::system::error_code &);
      void read_msg(std::shared_ptr<tcp_conn_t>);
      void handle_msg(const std::string &, std::shared_ptr<tcp_conn_t>);
-     void forward_msg(const std::string &);
+     void forward_msg(const message_t &);
      void disconnect(std::shared_ptr<tcp_conn_t>);
 }; // mw_server_t
 

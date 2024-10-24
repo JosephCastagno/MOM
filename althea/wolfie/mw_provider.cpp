@@ -22,21 +22,27 @@ mw_provider_t::mw_provider_t(message_queue_t &msg_q,
     } catch (const std::exception &e) {
         std::cerr << "mw_provider_t initialization failed: ";
         std::cerr << e.what() << std::endl;
-        throw; // maybe just don't do any error handling here
+        throw; 
     }
-
-    std::cout << "client created" << std::endl;
+    std::cout << "connected to middlware" << std::endl;
 }
 
 mw_provider_t::~mw_provider_t() {
-    std::cout << "client destroyed" << std::endl;
+    shutdown();
+}
+
+void mw_provider_t::shutdown() {
+    if (!m_running) return;
+
     m_running = false;
+    // clear this connection from mw internal recordkeeping
+    send_shutdown_message();
+
     if (m_socket.is_open()) {
         m_socket.close();
     }
 
     m_io_context.stop();
-
     if (m_worker.joinable()) {
         m_worker.join();
     }
@@ -72,7 +78,9 @@ void mw_provider_t::read_msg() {
         (boost::system::error_code ec, std::size_t _) 
     {
         if (ec) {
-            std::cerr << "error reading msg len: " << ec.message() << std::endl;
+            if (ec.message() != "Operation canceled") {
+                std::cerr << "error reading msg len: " << ec.message() << std::endl;
+            }
             return;
         }
 
@@ -125,4 +133,12 @@ void mw_provider_t::send_msg_with_header(const std::string &msg) {
             }
         }
     );
+}
+
+void mw_provider_t::send_shutdown_message() {
+    // indicate this connection shutting itself down, not sending a shutdown
+    // message to another actor
+    const message_t msg = message_t("Shutdown", shutdown_data_t{"self", "self"});
+    std::string serialized_msg = msg.serialize();
+    send_msg_with_header(serialized_msg);
 }

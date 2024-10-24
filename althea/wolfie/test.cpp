@@ -10,13 +10,15 @@
 
 #include "mw_provider.hpp"
 
-int main() {
+// changed to main2 when not being tested directly: avoid multiple entry
+// points error
+int main2() {
     const std::string ip = "127.0.0.1";
-    const int port = 8080;
+    const int port = 5000;
 
 
-    message_queue_t msg_q1;
-    message_queue_t msg_q2;
+    message_queue_t msg_q1; 
+    message_queue_t msg_q2; 
     std::cout << "initializing mw pro" << std::endl;
     mw_provider_t mw_pro_one = mw_provider_t(msg_q1, ip, port);
     mw_provider_t mw_pro_two = mw_provider_t(msg_q2, ip, port);
@@ -34,6 +36,6 @@ int main() {
     std::cout << "subscriber received: " << std::endl;
     std::cout << msg.serialize() << std::endl;
 
-    std::cout << "non subscriber queue length: " << !msg_q2.empty() << std::endl;
+    std::cout << "non subscriber queue length: " << msg_q2.size() << std::endl;
     return 0;
 }

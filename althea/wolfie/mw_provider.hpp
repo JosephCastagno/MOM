@@ -11,12 +11,13 @@ class mw_provider_t {
      std::thread m_worker; 
      boost::asio::io_context m_io_context;
      boost::asio::ip::tcp::socket m_socket;
-     bool m_running;
+     std::atomic<bool> m_running;
      std::mutex m_socket_mutex;
 
      void receive_msgs(); 
      void read_msg();
      void send_msg_with_header(const std::string &msg);
+     void send_shutdown_message();
 
  public:
      mw_provider_t(message_queue_t &msg_q, const std::string &ip, int port);
@@ -26,4 +27,5 @@ class mw_provider_t {
      void subscribe(const std::string &topic); 
      void unsubscribe(const std::string &data);
      void publish(const message_t &msg);
+     void shutdown();
 }; // mw_provider_t

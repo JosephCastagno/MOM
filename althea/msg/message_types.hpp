@@ -23,30 +23,15 @@ struct pulse_data_t : public message_data_t {
         const auto [doc, data_node] = msg_utils::string_to_xml(xml, "Pulse");
 
         std::string timestamp_str = data_node.attribute("timestamp").value();
-        std::tm tm = {};
-        std::istringstream ss(timestamp_str);
-        ss >> std:: get_time(&tm, "%Y-%m-%d %H:%M:%S");
-
-        if (ss.fail()) {
-            throw std::runtime_error(
-                "Failed to parse timestamp: " + timestamp_str);
-        }
-
-        m_timestamp = std::chrono::system_clock::from_time_t(
-            std::mktime(&tm));
+        m_timestamp = msg_utils::parse_ts_w_ms(timestamp_str);
     }
 
     std::string serialize() const {
         pugi::xml_document doc;
 
         pugi::xml_node pulse_node = doc.append_child("Pulse");
-        const std::time_t time = 
-        std::chrono::system_clock::to_time_t(m_timestamp);
-        const std::tm* tm = std::localtime(&time);
-
-        std::stringstream ss;
-        ss << std::put_time(tm, "%Y-%m-%d %H:%M:%S");
-        pulse_node.append_attribute("timestamp") = ss.str().c_str();
+        pulse_node.append_attribute("timestamp") =
+            msg_utils::get_ts_w_ms().c_str();
 
         std::ostringstream oss;
         doc.save(oss, "", pugi::format_no_declaration);
@@ -55,27 +40,29 @@ struct pulse_data_t : public message_data_t {
 }; // pulse_data_t
 
 struct shutdown_data_t : public message_data_t {
-    std::string m_trigger;
-    std::string m_reason;
+    std::string m_to;
+    std::string m_from;
 
     shutdown_data_t() = default;
 
-    shutdown_data_t(std::string trigger, std::string reason) 
-     : m_trigger(trigger), m_reason(m_reason) {}
+    shutdown_data_t(const std::string &to, const std::string &from) 
+        : m_to(to),
+          m_from(from)
+    {}
 
     shutdown_data_t(const std::string &xml) {
         const auto [doc, data_node] = 
             msg_utils::string_to_xml(xml, "Shutdown");
-        m_trigger = data_node.attribute("trigger").value();
-        m_reason = data_node.attribute("reason").value();
+        m_to = data_node.attribute("to").value();
+        m_from = data_node.attribute("from").value();
     }
 
     std::string serialize() const {
         pugi::xml_document doc;
 
         pugi::xml_node sdown_node = doc.append_child("Shutdown");
-        sdown_node.append_attribute("trigger") = m_trigger.c_str();
-        sdown_node.append_attribute("reason") = m_reason.c_str();
+        sdown_node.append_attribute("to") = m_to.c_str();
+        sdown_node.append_attribute("from") = m_from.c_str();
 
         std::ostringstream oss;
         doc.save(oss, "", pugi::format_no_declaration);
@@ -99,51 +86,18 @@ struct heartbeat_data_t : public message_data_t {
              msg_utils::string_to_xml(xml, "Heartbeat");
          
         std::string pulse_ts_str = data_node.attribute("pulse_ts").value();
-        std::tm pulse_tm = {};
-        std::istringstream ss(pulse_ts_str);
-        ss >> std:: get_time(&pulse_tm, "%Y-%m-%d %H:%M:%S");
-
-        if (ss.fail()) {
-            throw std::runtime_error(
-                "Failed to parse timestamp: " + pulse_ts_str);
-        }
-
-        m_pulse_ts = std::chrono::system_clock::from_time_t(
-            std::mktime(&pulse_tm));
-
+        m_pulse_ts = msg_utils::parse_ts_w_ms(pulse_ts_str);
+            
         std::string hbeat_ts_str = data_node.attribute("hbeat_ts").value();
-        std::tm hbeat_tm = {};
-        ss.str(hbeat_ts_str);
-        ss >> std:: get_time(&hbeat_tm, "%Y-%m-%d %H:%M:%S");
-
-        if (ss.fail()) {
-            throw std::runtime_error(
-                "Failed to parse timestamp: " + hbeat_ts_str);
-        }
-
-        m_hbeat_ts = std::chrono::system_clock::from_time_t(
-            std::mktime(&hbeat_tm));
+        m_hbeat_ts = msg_utils::parse_ts_w_ms(hbeat_ts_str);
      }
 
     std::string serialize() const {
         pugi::xml_document doc;
 
         pugi::xml_node hbeat_node = doc.append_child("Heartbeat");
-        const std::time_t pulse_ts = 
-            std::chrono::system_clock::to_time_t(m_pulse_ts);
-        const std::tm* pulse_tm = std::localtime(&pulse_ts);
-
-        std::stringstream ss;
-        ss << std::put_time(pulse_tm, "%Y-%m-%d %H:%M:%S");
-        hbeat_node.append_attribute("pulse_ts") = ss.str().c_str();
-
-        const std::time_t hbeat_ts = 
-            std::chrono::system_clock::to_time_t(m_hbeat_ts);
-        const std::tm* hbeat_tm = std::localtime(&hbeat_ts);
-
-        ss.str("");
-        ss << std::put_time(hbeat_tm, "%Y-%m-%d %H:%M:%S");
-        hbeat_node.append_attribute("hbeat_ts") = ss.str().c_str();
+        hbeat_node.append_attribute("pulse_ts") = msg_utils::format_ts(m_pulse_ts).c_str();
+        hbeat_node.append_attribute("hbeat_ts") = msg_utils::format_ts(m_hbeat_ts).c_str();
 
         std::ostringstream oss;
         doc.save(oss, "", pugi::format_no_declaration);
@@ -166,37 +120,23 @@ struct market_data_t : public message_data_t {
 
     market_data_t(const std::string &xml) {
         const auto [doc, data_node] = 
-            msg_utils::string_to_xml(xml, "Market Data");
+            msg_utils::string_to_xml(xml, "MarketData");
         m_symbol = data_node.attribute("symbol").value();
         m_price = std::stoi(data_node.attribute("price").value());
 
         std::string ts_str = data_node.attribute("timestamp").value();
-        std::tm tm = {};
-        std::istringstream ss(ts_str);
-        ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
-
-        if (ss.fail()) {
-            throw std::runtime_error(
-                "Failed to parse timestamp: " + ts_str);
-        }
-
-        m_timestamp = std::chrono::system_clock::from_time_t(
-            std::mktime(&tm));
+        m_timestamp = msg_utils::parse_ts_w_ms(ts_str);
     }
 
     std::string serialize() const {
         pugi::xml_document doc;
 
-        pugi::xml_node mkt_data_node = doc.append_child("Market Data");
+        pugi::xml_node mkt_data_node = doc.append_child("MarketData");
         mkt_data_node.append_attribute("symbol") = m_symbol.c_str();
         mkt_data_node.append_attribute("price") = std::to_string(m_price).c_str();
 
-        const std::time_t ts = 
-            std::chrono::system_clock::to_time_t(m_timestamp);
-        const std::tm* tm = std::localtime(&ts);
-        std::stringstream ss;
-        ss << std::put_time(tm, "%Y-%m-%d %H:%M:%S");
-        mkt_data_node.append_attribute("timestamp") = ss.str().c_str();
+        mkt_data_node.append_attribute("timestamp") = 
+            msg_utils::format_ts(m_timestamp).c_str();
 
         std::ostringstream oss;
         doc.save(oss, "", pugi::format_no_declaration);

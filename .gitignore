@@ -46,7 +46,6 @@ CMakeCache.txt
 CMakeFiles/
 CMakeScripts/
 cmake_install.cmake
-Makefile
 build/
 
 # Ignore other editor specific files

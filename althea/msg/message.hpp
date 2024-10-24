@@ -6,7 +6,6 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <variant>
 
 #include "message_types.hpp"
 #include "message_utils.hpp"
