@@ -138,7 +138,7 @@ void mw_provider_t::send_msg_with_header(const std::string &msg) {
 void mw_provider_t::send_shutdown_message() {
     // indicate this connection shutting itself down, not sending a shutdown
     // message to another actor
-    const message_t msg = message_t("Shutdown", shutdown_data_t{"self", "self"});
+    const message_t msg = message_t("shutdown", shutdown_data_t{"self", "self"});
     std::string serialized_msg = msg.serialize();
     send_msg_with_header(serialized_msg);
 }

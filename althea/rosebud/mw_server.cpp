@@ -102,7 +102,7 @@ void mw_server_t::handle_msg(const std::string &msg,
     }
 
     const message_t converted_msg = message_t(msg);
-    if (converted_msg.m_topic == "Shutdown") {
+    if (converted_msg.m_topic == "shutdown") {
         const shutdown_data_t shutdown_data = converted_msg.m_data;
         // client disconnect
         if (shutdown_data.m_to == "self" && shutdown_data.m_from == "self") {

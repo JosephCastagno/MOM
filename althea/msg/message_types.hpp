@@ -152,8 +152,8 @@ struct order_data_t : public message_data_t {
 
     order_data_t() = default;
 
-    order_data_t(const std::string participant, 
-                 const std::string sym,
+    order_data_t(const std::string &participant, 
+                 const std::string &sym,
                  int price,
                  uint32_t quantity)
     : m_participant(participant), 
