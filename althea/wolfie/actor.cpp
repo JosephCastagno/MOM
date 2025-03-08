@@ -13,9 +13,10 @@ actor_t::~actor_t() {
 }
 
 void actor_t::kill() {
-    const message_t shutdown = message_t(
-        "shutdown",
-        shutdown_data_t(m_name, "kill"));
+    const messaging::envelope shutdown = message_factory::create_shutdown(
+        m_name, 
+        "kill");
+
     enqueue(shutdown);
 }
 
@@ -27,7 +28,7 @@ void actor_t::shutdown() {
 
 void actor_t::consume() {
     while (m_running) {
-        message_t msg = m_msg_queue.dequeue();
+        messaging::envelope msg = m_msg_queue.dequeue();
         handle_message(msg);
     }
     m_mw_pro.shutdown();
@@ -42,7 +43,7 @@ void actor_t::start() {
     m_worker = std::thread([this] { consume(); });
 }
 
-void actor_t::enqueue(message_t msg) {
+void actor_t::enqueue(messaging::envelope msg) {
     if (!m_running) {
         return;
     }

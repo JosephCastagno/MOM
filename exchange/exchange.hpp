@@ -10,10 +10,10 @@ class exchange_t : public actor_t {
      timeout_provider_t m_timeout_pro;
      std::unordered_map<std::string, int> m_participant_to_count;
 
-     void handle_pulse(const message_t &);
-     void handle_order_received(const message_t &);
+     void handle_pulse(const messaging::envelope &);
+     void handle_order_received(const messaging::envelope &);
      void handle_timeout_alert();
-     void handle_message(const message_t &) override;
+     void handle_message(const messaging::envelope &) override;
      void mw_setup() override;
 
  public:

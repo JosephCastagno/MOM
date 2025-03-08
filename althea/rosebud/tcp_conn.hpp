@@ -20,7 +20,6 @@ class tcp_conn_t : public std::enable_shared_from_this<tcp_conn_t> {
  
  public:
      static std::shared_ptr<tcp_conn_t> create(boost::asio::io_context &);
-     void write(const std::string &);
      tcp::socket& socket();
      bool is_open() const;
      const int get_id() const;

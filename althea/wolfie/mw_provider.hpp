@@ -16,16 +16,16 @@ class mw_provider_t {
 
      void receive_msgs(); 
      void read_msg();
-     void send_msg_with_header(const std::string &msg);
+     void send_msg(const messaging::envelope &msg);
      void send_shutdown_message();
 
  public:
      mw_provider_t(message_queue_t &msg_q, const std::string &ip, int port);
      ~mw_provider_t();
 
-     void subscribe(const std::vector<std::string> &topics);
-     void subscribe(const std::string &topic); 
-     void unsubscribe(const std::string &data);
-     void publish(const message_t &msg);
+     void subscribe(const std::vector<std::string> &);
+     void subscribe(const std::string &); 
+     void unsubscribe(const std::string &);
+     void publish(const messaging::envelope &);
      void shutdown();
 }; // mw_provider_t

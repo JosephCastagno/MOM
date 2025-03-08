@@ -19,8 +19,9 @@ void timeout_provider_t::run() {
             continue;
         }
 
-        message_t alert_msg = message_t("alert", "");
-        m_msg_queue.enqueue(alert_msg);
+        const messaging::envelope msg = message_factory::create_alert(
+            "timeout provider");
+        m_msg_queue.enqueue(msg);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(m_ts));
     }

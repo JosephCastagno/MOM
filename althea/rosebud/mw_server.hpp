@@ -28,8 +28,9 @@ class mw_server_t {
      void handle_accept(std::shared_ptr<tcp_conn_t>,
                         const boost::system::error_code &);
      void read_msg(std::shared_ptr<tcp_conn_t>);
-     void handle_msg(const std::string &, std::shared_ptr<tcp_conn_t>);
-     void forward_msg(const message_t &);
+     void handle_msg(const messaging::envelope &, std::shared_ptr<tcp_conn_t>);
+     void forward_msg(const messaging::envelope &);
      void disconnect(std::shared_ptr<tcp_conn_t>);
+     void send(std::shared_ptr<tcp_conn_t>, const messaging::envelope &);
 }; // mw_server_t
 

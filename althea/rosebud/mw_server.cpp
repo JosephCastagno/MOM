@@ -1,8 +1,10 @@
 #include <boost/asio.hpp>
 
-#include "../msg/message.hpp"
 #include "mw_server.hpp"
 #include "tcp_conn.hpp"
+
+#include "../proto/message_factory.hpp"
+#include "../proto/message.pb.h"
 
 mw_server_t::mw_server_t(const int port) 
     : m_io_context(), 
@@ -48,7 +50,13 @@ void mw_server_t::read_msg(std::shared_ptr<tcp_conn_t> conn) {
             return;
         }
 
-        std::string msg(msg_buf->begin(), msg_buf->end());
+        messaging::envelope msg;
+        std::string raw_msg(msg_buf->begin(), msg_buf->end());
+        if (!msg.ParseFromString(raw_msg)) {
+            std::cerr << "failed to parse protobuf message" << std::endl;
+            return;
+        }
+
         handle_msg(msg, conn);
         read_msg(conn);
     };
@@ -76,19 +84,19 @@ void mw_server_t::read_msg(std::shared_ptr<tcp_conn_t> conn) {
                             len_callback);
 }
 
-void mw_server_t::handle_msg(const std::string &msg, 
+void mw_server_t::handle_msg(const messaging::envelope &msg, 
                              std::shared_ptr<tcp_conn_t> conn)
 {
     // log message received by mw server
-    std::cout << msg << std::endl;
-    if (msg.starts_with("subscribe")) {
-        const std::string topic = msg.substr(msg.find(',') + 1);
+    std::cout << msg.DebugString() << std::endl;
+    if (msg.topic() == "subscribe") {
+        const std::string &topic = msg.subscribe_data().topic();
         m_topic_to_subs[topic].insert(conn);
         return;
     }
 
-    if (msg.starts_with("unsubscribe")) {
-        const std::string topic = msg.substr(msg.find(',') + 1);
+    if (msg.topic() == "unsubscribe") { 
+        const std::string &topic = msg.unsubscribe_data().topic();
         const auto &it = m_topic_to_subs.find(topic);
         if (it == m_topic_to_subs.end()) {
             return;
@@ -101,11 +109,10 @@ void mw_server_t::handle_msg(const std::string &msg,
         return;
     }
 
-    const message_t converted_msg = message_t(msg);
-    if (converted_msg.m_topic == "shutdown") {
-        const shutdown_data_t shutdown_data = converted_msg.m_data;
+    if (msg.topic() == "shutdown") {
+        auto shutdown_data = msg.shutdown_data();
         // client disconnect
-        if (shutdown_data.m_to == "self" && shutdown_data.m_from == "self") {
+        if (shutdown_data.to() == "self" && shutdown_data.from() == "self") {
             const int id = conn->get_id();
             for (auto &[_, subs] : m_topic_to_subs) {
                 subs.erase(conn);
@@ -115,11 +122,11 @@ void mw_server_t::handle_msg(const std::string &msg,
         }
     }
 
-    forward_msg(converted_msg);
+    forward_msg(msg);
 }
 
-void mw_server_t::forward_msg(const message_t &msg) {
-    const std::string topic = msg.m_topic;
+void mw_server_t::forward_msg(const messaging::envelope &msg) {
+    const std::string topic = msg.topic();
     const auto &it = m_topic_to_subs.find(topic);
     if (it == m_topic_to_subs.end()) {
         return;
@@ -127,6 +134,34 @@ void mw_server_t::forward_msg(const message_t &msg) {
 
     auto &subs = it->second;
     for (const auto &sub : subs) {
-        sub->write(msg.serialize());
+        send(sub, msg);
     }
+}
+
+void mw_server_t::send(std::shared_ptr<tcp_conn_t> sub, 
+                       const messaging::envelope &msg) 
+{
+    std::string serialized_msg;
+    if (!msg.SerializeToString(&serialized_msg)) {
+        std::cerr << "failed to serialize protobuf message" << std::endl;
+        return;
+    }
+
+    uint32_t msg_len = htonl(static_cast<uint32_t>(serialized_msg.size()));
+
+    const std::vector<boost::asio::const_buffer> bufs {
+        boost::asio::buffer(&msg_len, sizeof(msg_len)),
+        boost::asio::buffer(serialized_msg)
+    };
+
+    auto write_callback = 
+        [](const boost::system::error_code &ec, std::size_t n) {
+            if (ec) {
+                std::cerr << ec.message() << std::endl;
+            } else {
+                std::cout << n << " bytes written" << std::endl;
+            }
+        };
+
+    boost::asio::async_write(sub->socket(), bufs, write_callback);
 }

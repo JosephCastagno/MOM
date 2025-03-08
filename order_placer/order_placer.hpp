@@ -5,11 +5,11 @@ class order_placer_t : public actor_t {
      int m_threshold;
      int m_orders_placed;
 
-     void handle_market_data(const message_t &);
-     void handle_heartbeat(const message_t &);
-     void handle_shutdown(const message_t &);
+     void handle_market_data(const messaging::envelope &);
+     void handle_heartbeat(const messaging::envelope &);
+     void handle_shutdown(const messaging::envelope &);
 
-     void handle_message(const message_t &) override;
+     void handle_message(const messaging::envelope &) override;
      void mw_setup() override;
 
  public:

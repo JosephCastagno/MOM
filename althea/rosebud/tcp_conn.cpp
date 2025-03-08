@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "tcp_conn.hpp"
+#include "../proto/message.pb.h"
 
 std::atomic<int> tcp_conn_t::global_id_counter{0};
 
@@ -25,25 +26,6 @@ const int tcp_conn_t::get_id() const {
 tcp_conn_t::tcp_conn_t(boost::asio::io_context &ctx)
     : m_socket(ctx), m_id(++global_id_counter)
 {}
-
-void tcp_conn_t::write(const std::string &msg) {
-    uint32_t msg_len_no = htonl(static_cast<uint32_t>(msg.size()));
-    const std::vector<boost::asio::const_buffer> bufs {
-        boost::asio::buffer(&msg_len_no, sizeof(msg_len_no)),
-        boost::asio::buffer(msg) 
-    };
-
-    auto write_callback = 
-        [](const boost::system::error_code &ec, std::size_t n) {
-            if (ec) {
-                std::cerr << ec.message() << std::endl;
-            } else {
-                std::cout << n << " bytes written" << std::endl;
-            }
-        };
-
-    boost::asio::async_write(m_socket, bufs, write_callback);
-}
 
 tcp_conn_t::~tcp_conn_t() {
     std::cout << "conn destroyed: " << m_id << std::endl;

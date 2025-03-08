@@ -7,6 +7,8 @@
 #include "actor.hpp"
 #include "message_queue.hpp"
 #include "../msg/message.hpp"
+#include "../proto/message.pb.h"
+#include "../proto/message_factory.hpp"
 
 #include "mw_provider.hpp"
 
@@ -23,7 +25,7 @@ int main2() {
     mw_provider_t mw_pro_one = mw_provider_t(msg_q1, ip, port);
     mw_provider_t mw_pro_two = mw_provider_t(msg_q2, ip, port);
     
-    message_t pulse = message_t("pulse", pulse_data_t());
+    messaging::envelope pulse = message_factory::create_pulse();
 
     mw_pro_one.subscribe("pulse");
     mw_pro_two.publish(pulse);
@@ -32,9 +34,9 @@ int main2() {
         continue;
     }
 
-    message_t msg = msg_q1.dequeue();
+    messaging::envelope msg = msg_q1.dequeue();
     std::cout << "subscriber received: " << std::endl;
-    std::cout << msg.serialize() << std::endl;
+    std::cout << msg.DebugString() << std::endl;
 
     std::cout << "non subscriber queue length: " << msg_q2.size() << std::endl;
     return 0;

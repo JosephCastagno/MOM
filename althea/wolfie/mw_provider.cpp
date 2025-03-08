@@ -67,8 +67,14 @@ void mw_provider_t::read_msg() {
             return;
         }
 
-        std::string message(msg_buf->begin(), msg_buf->end());
-        message_t msg = message_t(message);
+        // parse protobuf message
+        messaging::envelope msg;
+        std::string raw_msg{msg_buf->data(), msg_buf->size()};
+        if (!msg.ParseFromString(raw_msg)) {
+            std::cerr << "failed to parse protobuf msg" << std::endl;
+            return;
+        }
+
         m_msg_queue.enqueue(msg);
         read_msg();
     };
@@ -78,16 +84,14 @@ void mw_provider_t::read_msg() {
         (boost::system::error_code ec, std::size_t _) 
     {
         if (ec) {
-            if (ec.message() != "Operation canceled") {
-                std::cerr << "error reading msg len: " << ec.message() << std::endl;
-            }
+            std::cerr << "error reading msg len: " << ec.message() << std::endl;
             return;
         }
 
-        uint32_t msg_len_no = *reinterpret_cast<uint32_t*>(msg_len_buf->data());
-        uint32_t msg_length = ntohl(msg_len_no);
-        msg_buf->resize(msg_length);
+        uint32_t msg_len = ntohl(*reinterpret_cast<uint32_t*>(
+            msg_len_buf->data()));
 
+        msg_buf->resize(msg_len);
         boost::asio::async_read(m_socket, 
                                 boost::asio::buffer(*msg_buf), 
                                 msg_callback);
@@ -105,40 +109,48 @@ void mw_provider_t::subscribe(const std::vector<std::string> &topics) {
 }
 
 void mw_provider_t::subscribe(const std::string &topic) {
-    const std::string sub = "subscribe," + topic;
-    send_msg_with_header(sub);
+    const messaging::envelope sub = message_factory::create_subscribe(topic);
+    send_msg(sub);
 }
 
 void mw_provider_t::unsubscribe(const std::string &topic) {
-    const std::string unsub = "unsubscribe," + topic;
-    send_msg_with_header(unsub);
+    const messaging::envelope unsub = message_factory::create_unsubscribe(
+        topic);
+    send_msg(unsub);
 }
 
-void mw_provider_t::publish(const message_t &msg) {
-    const std::string msg_str = msg.serialize();
-    send_msg_with_header(msg_str);
+void mw_provider_t::publish(const messaging::envelope &msg) {
+    send_msg(msg);
 }
 
-void mw_provider_t::send_msg_with_header(const std::string &msg) {
-    uint32_t msg_length_no = htonl(static_cast<uint32_t>(msg.size()));
-    std::vector<boost::asio::const_buffer> bufs;
-    bufs.emplace_back(
-        boost::asio::buffer(&msg_length_no, sizeof(msg_length_no)));
-    bufs.emplace_back(boost::asio::buffer(msg));
-    boost::asio::async_write(m_socket, bufs,
+void mw_provider_t::send_msg(const messaging::envelope &msg) {
+    std::string serialized_msg;
+    if (!msg.SerializeToString(&serialized_msg)) {
+        std::cerr << "failed to serialize protobuf message" << std::endl;
+        return;
+    }
+
+    uint32_t msg_len = htonl(static_cast<uint32_t>(serialized_msg.size()));
+    std::vector<boost::asio::const_buffer> bufs {
+        boost::asio::buffer(&msg_len, sizeof(msg_len)),
+        boost::asio::buffer(serialized_msg)
+    };
+
+    auto write_callback = 
         [](const boost::system::error_code &ec, std::size_t _) {
             if (ec) {
-                std::cerr << "error sending msg: ";
-                std::cerr << ec.message() << std::endl;
+                std::cerr << "error sending msg: " 
+                          << ec.message() << std::endl;
             }
-        }
-    );
+        };
+
+    boost::asio::async_write(m_socket, bufs, write_callback);
 }
 
 void mw_provider_t::send_shutdown_message() {
     // indicate this connection shutting itself down, not sending a shutdown
     // message to another actor
-    const message_t msg = message_t("shutdown", shutdown_data_t{"self", "self"});
-    std::string serialized_msg = msg.serialize();
-    send_msg_with_header(serialized_msg);
+    const messaging::envelope msg = message_factory::create_shutdown("self", 
+                                                                     "self");
+    send_msg(msg);
 }

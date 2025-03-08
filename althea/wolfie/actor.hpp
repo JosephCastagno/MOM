@@ -19,7 +19,7 @@ class actor_t {
      void consume();
      void shutdown();
      void handle_shutdown();
-     virtual void handle_message(const message_t &msg) = 0;
+     virtual void handle_message(const messaging::envelope &msg) = 0;
      virtual void mw_setup() = 0;
  public:
      actor_t(std::string name, const std::string &ip, const int port);
@@ -27,6 +27,6 @@ class actor_t {
 
      void start();
      void kill();
-     void enqueue(message_t msg);
+     void enqueue(messaging::envelope msg);
      bool is_running() const;
 }; // actor_t

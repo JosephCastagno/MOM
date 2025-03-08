@@ -14,7 +14,7 @@ void keyboard_input() {
 }
 
 int main() {
-    const std::string mw_ip = "128.220.224.100";
+    const std::string mw_ip = "127.0.0.1";
     const int mw_port = 5000;
     exchange_t exchange{mw_ip, mw_port};
     exchange.start();

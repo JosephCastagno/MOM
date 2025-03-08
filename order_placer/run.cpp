@@ -1,7 +1,7 @@
 #include "order_placer.hpp"
 
 int main() {
-    const std::string MW_IP = "128.220.224.100";
+    const std::string MW_IP = "127.0.0.1";
     const int MW_PORT = 5000;
 
     const int THRESHOLD_ONE = 5;

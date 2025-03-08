@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package messaging;
+
+message envelope {
+    string topic = 1;
+    oneof payload {
+        subscribe subscribe_data = 2;
+        unsubscribe unsubscribe_data = 3;
+        heartbeat heartbeat_data = 4;
+        market market_data = 5;
+        order order_data = 6;
+        pulse pulse_data = 7;
+        shutdown shutdown_data = 9;
+        alert alert_data = 10;
+    }
+}
+
+message subscribe {
+    string topic = 1;
+}
+
+message unsubscribe {
+    string topic = 1;
+}
+
+message pulse {
+    int64 timestamp = 1;
+}
+
+message shutdown {
+    string to = 1;
+    string from = 2;
+}
+
+message heartbeat {
+    int64 pulse_ts = 1;
+    int64 hbeat_ts = 2;
+}
+
+message market {
+    string symbol = 1;
+    int32 price = 2;
+    int64 timestamp = 3;
+}
+
+message order {
+    string participant = 1;
+    string symbol = 2;
+    int32 price = 3;
+    uint32 quantity = 4;
+}
+
+message alert {
+    string description = 1;
+}
