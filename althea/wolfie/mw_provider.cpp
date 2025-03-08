@@ -12,6 +12,7 @@ mw_provider_t::mw_provider_t(message_queue_t &msg_q,
     : m_msg_queue(msg_q), 
       m_io_context(), 
       m_socket(m_io_context), 
+      m_strand(boost::asio::make_strand(m_io_context)),
       m_running(true)
 {
     try {
@@ -94,12 +95,14 @@ void mw_provider_t::read_msg() {
         msg_buf->resize(msg_len);
         boost::asio::async_read(m_socket, 
                                 boost::asio::buffer(*msg_buf), 
-                                msg_callback);
+                                boost::asio::bind_executor(m_strand, 
+                                                           msg_callback));
     };
 
     boost::asio::async_read(m_socket, 
                             boost::asio::buffer(*msg_len_buf),
-                            length_callback);
+                            boost::asio::bind_executor(m_strand, 
+                                                       length_callback));
 }
 
 void mw_provider_t::subscribe(const std::vector<std::string> &topics) {
@@ -144,7 +147,10 @@ void mw_provider_t::send_msg(const messaging::envelope &msg) {
             }
         };
 
-    boost::asio::async_write(m_socket, bufs, write_callback);
+    boost::asio::async_write(m_socket, 
+                             bufs, 
+                             boost::asio::bind_executor(m_strand, 
+                                                        write_callback));
 }
 
 void mw_provider_t::send_shutdown_message() {

@@ -15,6 +15,12 @@ tcp::socket& tcp_conn_t::socket() {
     return m_socket;
 }
 
+boost::asio::strand<boost::asio::io_context::executor_type> &tcp_conn_t::get_strand() 
+{
+    return m_strand;
+}
+
+
 bool tcp_conn_t::is_open() const {
     return m_socket.is_open();
 }
@@ -24,7 +30,9 @@ const int tcp_conn_t::get_id() const {
 }
 
 tcp_conn_t::tcp_conn_t(boost::asio::io_context &ctx)
-    : m_socket(ctx), m_id(++global_id_counter)
+    : m_socket(ctx), 
+      m_strand(boost::asio::make_strand(ctx)),
+      m_id(++global_id_counter)
 {}
 
 tcp_conn_t::~tcp_conn_t() {

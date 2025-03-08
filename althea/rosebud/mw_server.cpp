@@ -76,19 +76,23 @@ void mw_server_t::read_msg(std::shared_ptr<tcp_conn_t> conn) {
 
         boost::asio::async_read(conn->socket(),
                                 boost::asio::buffer(*msg_buf),
-                                msg_callback);
+                                boost::asio::bind_executor(conn->get_strand(), 
+                                                           msg_callback));
     };
 
     boost::asio::async_read(conn->socket(),
                             boost::asio::buffer(*msg_len_buf),
-                            len_callback);
+                            boost::asio::bind_executor(conn->get_strand(),
+                                                       len_callback));
 }
 
 void mw_server_t::handle_msg(const messaging::envelope &msg, 
                              std::shared_ptr<tcp_conn_t> conn)
 {
     // log message received by mw server
+    std::cout << "message received " << std::endl;
     std::cout << msg.DebugString() << std::endl;
+    std::cout << msg.topic() << std::endl;
     if (msg.topic() == "subscribe") {
         const std::string &topic = msg.subscribe_data().topic();
         m_topic_to_subs[topic].insert(conn);
@@ -163,5 +167,8 @@ void mw_server_t::send(std::shared_ptr<tcp_conn_t> sub,
             }
         };
 
-    boost::asio::async_write(sub->socket(), bufs, write_callback);
+    boost::asio::async_write(sub->socket(), 
+                             bufs, 
+                             boost::asio::bind_executor(sub->get_strand(), 
+                                                        write_callback));
 }

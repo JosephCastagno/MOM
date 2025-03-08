@@ -13,6 +13,7 @@ using boost::asio::ip::tcp;
 class tcp_conn_t : public std::enable_shared_from_this<tcp_conn_t> {
  private:
      tcp::socket m_socket;
+     boost::asio::strand<boost::asio::io_context::executor_type> m_strand;
      static std::atomic<int> global_id_counter;
      int m_id;
 
@@ -21,6 +22,7 @@ class tcp_conn_t : public std::enable_shared_from_this<tcp_conn_t> {
  public:
      static std::shared_ptr<tcp_conn_t> create(boost::asio::io_context &);
      tcp::socket& socket();
+     boost::asio::strand<boost::asio::io_context::executor_type> &get_strand();
      bool is_open() const;
      const int get_id() const;
      ~tcp_conn_t();

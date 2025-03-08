@@ -1,7 +1,6 @@
 #pragma once
 
 #include <boost/asio.hpp>
-#include <mutex>
 
 #include "message_queue.hpp"
 
@@ -11,8 +10,8 @@ class mw_provider_t {
      std::thread m_worker; 
      boost::asio::io_context m_io_context;
      boost::asio::ip::tcp::socket m_socket;
+     boost::asio::strand<boost::asio::io_context::executor_type> m_strand;
      std::atomic<bool> m_running;
-     std::mutex m_socket_mutex;
 
      void receive_msgs(); 
      void read_msg();
