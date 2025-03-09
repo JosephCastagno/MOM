@@ -13,6 +13,7 @@ message envelope {
         pulse pulse_data = 7;
         shutdown shutdown_data = 9;
         alert alert_data = 10;
+        disconnect disconnect_data = 11; 
     }
 }
 
@@ -54,3 +55,6 @@ message order {
 message alert {
     string description = 1;
 }
+
+message disconnect { }
+

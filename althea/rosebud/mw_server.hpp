@@ -21,8 +21,6 @@ class mw_server_t {
      std::unordered_map<std::string, 
                         std::unordered_set<std::shared_ptr<tcp_conn_t>>> 
          m_topic_to_subs;
-     std::unordered_map<int, std::shared_ptr<tcp_conn_t>>
-         m_id_to_conn;
 
      void start_accept();
      void handle_accept(std::shared_ptr<tcp_conn_t>,

@@ -26,7 +26,7 @@ class actor_t {
      ~actor_t();
 
      void start();
-     void kill();
      void enqueue(messaging::envelope msg);
      bool is_running() const;
+     void join();
 }; // actor_t

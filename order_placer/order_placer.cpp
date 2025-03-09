@@ -31,13 +31,9 @@ void order_placer_t::handle_message(const messaging::envelope &msg) {
 
 void order_placer_t::handle_shutdown(const messaging::envelope &msg) {
     const auto sdown = msg.shutdown_data();
-    // FIXME rot
+    // FIXME shutdown broadcasted to all actors, not just recipient
     if (sdown.to() == m_name) {
-        if (sdown.from() == "kill") {
-            actor_t::handle_shutdown();
-        } else {
-            kill();
-        }
+        actor_t::shutdown();
     }
 }
 
@@ -80,11 +76,9 @@ void order_placer_t::handle_market_data(const messaging::envelope &msg) {
     }
 
     std::cout << "Orders Placed " << m_name << ": " << m_orders_placed << "\n" << std::endl;
-    if (m_orders_placed < 10) {
-        return;
+    if (m_orders_placed >= 10) {
+        actor_t::shutdown();
     }
-
-    kill();
 }
 
 void order_placer_t::mw_setup() {

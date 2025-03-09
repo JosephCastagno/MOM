@@ -14,16 +14,24 @@ timeout_provider_t::~timeout_provider_t() {
 }
 
 void timeout_provider_t::run() {
+    std::unique_lock<std::mutex> lock(m_mutex);
     while (m_running) {
-        if (m_paused) {
-            continue;
-        }
 
-        const messaging::envelope msg = message_factory::create_alert(
+        // if paused, wait until resumed or shutdown
+        m_cv.wait(lock, [this]() { return !m_paused || !m_running; });
+        if (!m_running) break;
+
+        // wait for m_ts milliseconds, wake early if paused or shutdown
+        auto predicate = [this](){ return m_paused || !m_running; };
+        bool timeout = !m_cv.wait_for(lock, 
+                                      std::chrono::milliseconds(m_ts),
+                                      predicate);
+        if (!m_running) break;
+        if (!m_paused && timeout) {
+            const messaging::envelope msg = message_factory::create_alert(
             "timeout provider");
-        m_msg_queue.enqueue(msg);
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(m_ts));
+            m_msg_queue.enqueue(msg);
+        }
     }
 }
 

@@ -16,9 +16,8 @@ int main() {
     op_1.start();
     op_2.start();
 
-    while (op_1.is_running() || op_2.is_running()) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    }
+    op_1.join();
+    op_2.join();
 
     return 0;
 }

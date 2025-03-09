@@ -21,7 +21,6 @@ mw_server_t::~mw_server_t() {
 
 void mw_server_t::start_accept() {
     std::shared_ptr<tcp_conn_t> new_conn = tcp_conn_t::create(m_io_context);
-    m_id_to_conn[new_conn->get_id()] = new_conn;
 
     auto handler = [this, new_conn](const boost::system::error_code &ec) {
         handle_accept(new_conn, ec);
@@ -90,9 +89,7 @@ void mw_server_t::handle_msg(const messaging::envelope &msg,
                              std::shared_ptr<tcp_conn_t> conn)
 {
     // log message received by mw server
-    std::cout << "message received " << std::endl;
     std::cout << msg.DebugString() << std::endl;
-    std::cout << msg.topic() << std::endl;
     if (msg.topic() == "subscribe") {
         const std::string &topic = msg.subscribe_data().topic();
         m_topic_to_subs[topic].insert(conn);
@@ -113,17 +110,12 @@ void mw_server_t::handle_msg(const messaging::envelope &msg,
         return;
     }
 
-    if (msg.topic() == "shutdown") {
-        auto shutdown_data = msg.shutdown_data();
-        // client disconnect
-        if (shutdown_data.to() == "self" && shutdown_data.from() == "self") {
-            const int id = conn->get_id();
-            for (auto &[_, subs] : m_topic_to_subs) {
-                subs.erase(conn);
-            }
-            m_id_to_conn.erase(id);
-            return;
+    if (msg.topic() == "disconnect") {
+        // client disconnect, unsubscribe from all topics
+        for (auto &[_, subs] : m_topic_to_subs) {
+            subs.erase(conn);
         }
+        return;
     }
 
     forward_msg(msg);

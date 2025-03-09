@@ -23,6 +23,7 @@
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/arena.h>
 #include <google/protobuf/arenastring.h>
+#include <google/protobuf/generated_message_bases.h>
 #include <google/protobuf/generated_message_table_driven.h>
 #include <google/protobuf/generated_message_util.h>
 #include <google/protobuf/metadata_lite.h>
@@ -46,7 +47,7 @@ struct TableStruct_message_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxiliaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[9]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[10]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
@@ -57,6 +58,9 @@ namespace messaging {
 class alert;
 struct alertDefaultTypeInternal;
 extern alertDefaultTypeInternal _alert_default_instance_;
+class disconnect;
+struct disconnectDefaultTypeInternal;
+extern disconnectDefaultTypeInternal _disconnect_default_instance_;
 class envelope;
 struct envelopeDefaultTypeInternal;
 extern envelopeDefaultTypeInternal _envelope_default_instance_;
@@ -84,6 +88,7 @@ extern unsubscribeDefaultTypeInternal _unsubscribe_default_instance_;
 }  // namespace messaging
 PROTOBUF_NAMESPACE_OPEN
 template<> ::messaging::alert* Arena::CreateMaybeMessage<::messaging::alert>(Arena*);
+template<> ::messaging::disconnect* Arena::CreateMaybeMessage<::messaging::disconnect>(Arena*);
 template<> ::messaging::envelope* Arena::CreateMaybeMessage<::messaging::envelope>(Arena*);
 template<> ::messaging::heartbeat* Arena::CreateMaybeMessage<::messaging::heartbeat>(Arena*);
 template<> ::messaging::market* Arena::CreateMaybeMessage<::messaging::market>(Arena*);
@@ -149,6 +154,7 @@ class envelope final :
     kPulseData = 7,
     kShutdownData = 9,
     kAlertData = 10,
+    kDisconnectData = 11,
     PAYLOAD_NOT_SET = 0,
   };
 
@@ -240,6 +246,7 @@ class envelope final :
     kPulseDataFieldNumber = 7,
     kShutdownDataFieldNumber = 9,
     kAlertDataFieldNumber = 10,
+    kDisconnectDataFieldNumber = 11,
   };
   // string topic = 1;
   void clear_topic();
@@ -399,6 +406,24 @@ class envelope final :
       ::messaging::alert* alert_data);
   ::messaging::alert* unsafe_arena_release_alert_data();
 
+  // .messaging.disconnect disconnect_data = 11;
+  bool has_disconnect_data() const;
+  private:
+  bool _internal_has_disconnect_data() const;
+  public:
+  void clear_disconnect_data();
+  const ::messaging::disconnect& disconnect_data() const;
+  PROTOBUF_NODISCARD ::messaging::disconnect* release_disconnect_data();
+  ::messaging::disconnect* mutable_disconnect_data();
+  void set_allocated_disconnect_data(::messaging::disconnect* disconnect_data);
+  private:
+  const ::messaging::disconnect& _internal_disconnect_data() const;
+  ::messaging::disconnect* _internal_mutable_disconnect_data();
+  public:
+  void unsafe_arena_set_allocated_disconnect_data(
+      ::messaging::disconnect* disconnect_data);
+  ::messaging::disconnect* unsafe_arena_release_disconnect_data();
+
   void clear_payload();
   PayloadCase payload_case() const;
   // @@protoc_insertion_point(class_scope:messaging.envelope)
@@ -412,6 +437,7 @@ class envelope final :
   void set_has_pulse_data();
   void set_has_shutdown_data();
   void set_has_alert_data();
+  void set_has_disconnect_data();
 
   inline bool has_payload() const;
   inline void clear_has_payload();
@@ -431,6 +457,7 @@ class envelope final :
     ::messaging::pulse* pulse_data_;
     ::messaging::shutdown* shutdown_data_;
     ::messaging::alert* alert_data_;
+    ::messaging::disconnect* disconnect_data_;
   } payload_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   uint32_t _oneof_case_[1];
@@ -1722,6 +1749,124 @@ class alert final :
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_message_2eproto;
 };
+// -------------------------------------------------------------------
+
+class disconnect final :
+    public ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase /* @@protoc_insertion_point(class_definition:messaging.disconnect) */ {
+ public:
+  inline disconnect() : disconnect(nullptr) {}
+  explicit constexpr disconnect(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  disconnect(const disconnect& from);
+  disconnect(disconnect&& from) noexcept
+    : disconnect() {
+    *this = ::std::move(from);
+  }
+
+  inline disconnect& operator=(const disconnect& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline disconnect& operator=(disconnect&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const disconnect& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const disconnect* internal_default_instance() {
+    return reinterpret_cast<const disconnect*>(
+               &_disconnect_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    9;
+
+  friend void swap(disconnect& a, disconnect& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(disconnect* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(disconnect* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  disconnect* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<disconnect>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::CopyFrom;
+  inline void CopyFrom(const disconnect& from) {
+    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::CopyImpl(this, from);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::MergeFrom;
+  void MergeFrom(const disconnect& from) {
+    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::MergeImpl(this, from);
+  }
+  public:
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "messaging.disconnect";
+  }
+  protected:
+  explicit disconnect(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  private:
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // @@protoc_insertion_point(class_scope:messaging.disconnect)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_message_2eproto;
+};
 // ===================================================================
 
 
@@ -2376,6 +2521,80 @@ inline ::messaging::alert* envelope::mutable_alert_data() {
   return _msg;
 }
 
+// .messaging.disconnect disconnect_data = 11;
+inline bool envelope::_internal_has_disconnect_data() const {
+  return payload_case() == kDisconnectData;
+}
+inline bool envelope::has_disconnect_data() const {
+  return _internal_has_disconnect_data();
+}
+inline void envelope::set_has_disconnect_data() {
+  _oneof_case_[0] = kDisconnectData;
+}
+inline void envelope::clear_disconnect_data() {
+  if (_internal_has_disconnect_data()) {
+    if (GetArenaForAllocation() == nullptr) {
+      delete payload_.disconnect_data_;
+    }
+    clear_has_payload();
+  }
+}
+inline ::messaging::disconnect* envelope::release_disconnect_data() {
+  // @@protoc_insertion_point(field_release:messaging.envelope.disconnect_data)
+  if (_internal_has_disconnect_data()) {
+    clear_has_payload();
+      ::messaging::disconnect* temp = payload_.disconnect_data_;
+    if (GetArenaForAllocation() != nullptr) {
+      temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+    }
+    payload_.disconnect_data_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline const ::messaging::disconnect& envelope::_internal_disconnect_data() const {
+  return _internal_has_disconnect_data()
+      ? *payload_.disconnect_data_
+      : reinterpret_cast< ::messaging::disconnect&>(::messaging::_disconnect_default_instance_);
+}
+inline const ::messaging::disconnect& envelope::disconnect_data() const {
+  // @@protoc_insertion_point(field_get:messaging.envelope.disconnect_data)
+  return _internal_disconnect_data();
+}
+inline ::messaging::disconnect* envelope::unsafe_arena_release_disconnect_data() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:messaging.envelope.disconnect_data)
+  if (_internal_has_disconnect_data()) {
+    clear_has_payload();
+    ::messaging::disconnect* temp = payload_.disconnect_data_;
+    payload_.disconnect_data_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline void envelope::unsafe_arena_set_allocated_disconnect_data(::messaging::disconnect* disconnect_data) {
+  clear_payload();
+  if (disconnect_data) {
+    set_has_disconnect_data();
+    payload_.disconnect_data_ = disconnect_data;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:messaging.envelope.disconnect_data)
+}
+inline ::messaging::disconnect* envelope::_internal_mutable_disconnect_data() {
+  if (!_internal_has_disconnect_data()) {
+    clear_payload();
+    set_has_disconnect_data();
+    payload_.disconnect_data_ = CreateMaybeMessage< ::messaging::disconnect >(GetArenaForAllocation());
+  }
+  return payload_.disconnect_data_;
+}
+inline ::messaging::disconnect* envelope::mutable_disconnect_data() {
+  ::messaging::disconnect* _msg = _internal_mutable_disconnect_data();
+  // @@protoc_insertion_point(field_mutable:messaging.envelope.disconnect_data)
+  return _msg;
+}
+
 inline bool envelope::has_payload() const {
   return payload_case() != PAYLOAD_NOT_SET;
 }
@@ -2965,9 +3184,15 @@ inline void alert::set_allocated_description(std::string* description) {
   // @@protoc_insertion_point(field_set_allocated:messaging.alert.description)
 }
 
+// -------------------------------------------------------------------
+
+// disconnect
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

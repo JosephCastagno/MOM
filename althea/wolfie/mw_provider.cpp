@@ -36,11 +36,19 @@ void mw_provider_t::shutdown() {
     if (!m_running) return;
 
     m_running = false;
-    // clear this connection from mw internal recordkeeping
-    send_shutdown_message();
+    
+    send_disconnect();
+
+    // cancel pending asio operations, causes event loop to exit
+    boost::system::error_code ec;
+    m_socket.cancel(ec);
+    if (ec) {
+        std::cerr << "error cancelling operations: " 
+                  << ec.message() << std::endl;
+    }
 
     if (m_socket.is_open()) {
-        m_socket.close();
+        m_socket.close(ec);
     }
 
     m_io_context.stop();
@@ -153,10 +161,8 @@ void mw_provider_t::send_msg(const messaging::envelope &msg) {
                                                         write_callback));
 }
 
-void mw_provider_t::send_shutdown_message() {
-    // indicate this connection shutting itself down, not sending a shutdown
-    // message to another actor
-    const messaging::envelope msg = message_factory::create_shutdown("self", 
-                                                                     "self");
+void mw_provider_t::send_disconnect() {
+    // disconnect from mw
+    const messaging::envelope msg = message_factory::create_disconnect();
     send_msg(msg);
 }

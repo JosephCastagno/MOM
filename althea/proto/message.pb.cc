@@ -133,8 +133,19 @@ struct alertDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT alertDefaultTypeInternal _alert_default_instance_;
+constexpr disconnect::disconnect(
+  ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized){}
+struct disconnectDefaultTypeInternal {
+  constexpr disconnectDefaultTypeInternal()
+    : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
+  ~disconnectDefaultTypeInternal() {}
+  union {
+    disconnect _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT disconnectDefaultTypeInternal _disconnect_default_instance_;
 }  // namespace messaging
-static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_message_2eproto[9];
+static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_message_2eproto[10];
 static constexpr ::PROTOBUF_NAMESPACE_ID::EnumDescriptor const** file_level_enum_descriptors_message_2eproto = nullptr;
 static constexpr ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor const** file_level_service_descriptors_message_2eproto = nullptr;
 
@@ -146,6 +157,7 @@ const uint32_t TableStruct_message_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::messaging::envelope, topic_),
+  ::PROTOBUF_NAMESPACE_ID::internal::kInvalidFieldOffsetTag,
   ::PROTOBUF_NAMESPACE_ID::internal::kInvalidFieldOffsetTag,
   ::PROTOBUF_NAMESPACE_ID::internal::kInvalidFieldOffsetTag,
   ::PROTOBUF_NAMESPACE_ID::internal::kInvalidFieldOffsetTag,
@@ -218,17 +230,24 @@ const uint32_t TableStruct_message_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::messaging::alert, description_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::messaging::disconnect, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, -1, sizeof(::messaging::envelope)},
-  { 16, -1, -1, sizeof(::messaging::subscribe)},
-  { 23, -1, -1, sizeof(::messaging::unsubscribe)},
-  { 30, -1, -1, sizeof(::messaging::pulse)},
-  { 37, -1, -1, sizeof(::messaging::shutdown)},
-  { 45, -1, -1, sizeof(::messaging::heartbeat)},
-  { 53, -1, -1, sizeof(::messaging::market)},
-  { 62, -1, -1, sizeof(::messaging::order)},
-  { 72, -1, -1, sizeof(::messaging::alert)},
+  { 17, -1, -1, sizeof(::messaging::subscribe)},
+  { 24, -1, -1, sizeof(::messaging::unsubscribe)},
+  { 31, -1, -1, sizeof(::messaging::pulse)},
+  { 38, -1, -1, sizeof(::messaging::shutdown)},
+  { 46, -1, -1, sizeof(::messaging::heartbeat)},
+  { 54, -1, -1, sizeof(::messaging::market)},
+  { 63, -1, -1, sizeof(::messaging::order)},
+  { 73, -1, -1, sizeof(::messaging::alert)},
+  { 80, -1, -1, sizeof(::messaging::disconnect)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -241,10 +260,11 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::messaging::_market_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::messaging::_order_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::messaging::_alert_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::messaging::_disconnect_default_instance_),
 };
 
 const char descriptor_table_protodef_message_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\rmessage.proto\022\tmessaging\"\210\003\n\010envelope\022"
+  "\n\rmessage.proto\022\tmessaging\"\272\003\n\010envelope\022"
   "\r\n\005topic\030\001 \001(\t\022.\n\016subscribe_data\030\002 \001(\0132\024"
   ".messaging.subscribeH\000\0222\n\020unsubscribe_da"
   "ta\030\003 \001(\0132\026.messaging.unsubscribeH\000\022.\n\016he"
@@ -254,21 +274,22 @@ const char descriptor_table_protodef_message_2eproto[] PROTOBUF_SECTION_VARIABLE
   "erH\000\022&\n\npulse_data\030\007 \001(\0132\020.messaging.pul"
   "seH\000\022,\n\rshutdown_data\030\t \001(\0132\023.messaging."
   "shutdownH\000\022&\n\nalert_data\030\n \001(\0132\020.messagi"
-  "ng.alertH\000B\t\n\007payload\"\032\n\tsubscribe\022\r\n\005to"
-  "pic\030\001 \001(\t\"\034\n\013unsubscribe\022\r\n\005topic\030\001 \001(\t\""
-  "\032\n\005pulse\022\021\n\ttimestamp\030\001 \001(\003\"$\n\010shutdown\022"
-  "\n\n\002to\030\001 \001(\t\022\014\n\004from\030\002 \001(\t\"/\n\theartbeat\022\020"
-  "\n\010pulse_ts\030\001 \001(\003\022\020\n\010hbeat_ts\030\002 \001(\003\":\n\006ma"
-  "rket\022\016\n\006symbol\030\001 \001(\t\022\r\n\005price\030\002 \001(\005\022\021\n\tt"
-  "imestamp\030\003 \001(\003\"M\n\005order\022\023\n\013participant\030\001"
-  " \001(\t\022\016\n\006symbol\030\002 \001(\t\022\r\n\005price\030\003 \001(\005\022\020\n\010q"
-  "uantity\030\004 \001(\r\"\034\n\005alert\022\023\n\013description\030\001 "
-  "\001(\tb\006proto3"
+  "ng.alertH\000\0220\n\017disconnect_data\030\013 \001(\0132\025.me"
+  "ssaging.disconnectH\000B\t\n\007payload\"\032\n\tsubsc"
+  "ribe\022\r\n\005topic\030\001 \001(\t\"\034\n\013unsubscribe\022\r\n\005to"
+  "pic\030\001 \001(\t\"\032\n\005pulse\022\021\n\ttimestamp\030\001 \001(\003\"$\n"
+  "\010shutdown\022\n\n\002to\030\001 \001(\t\022\014\n\004from\030\002 \001(\t\"/\n\th"
+  "eartbeat\022\020\n\010pulse_ts\030\001 \001(\003\022\020\n\010hbeat_ts\030\002"
+  " \001(\003\":\n\006market\022\016\n\006symbol\030\001 \001(\t\022\r\n\005price\030"
+  "\002 \001(\005\022\021\n\ttimestamp\030\003 \001(\003\"M\n\005order\022\023\n\013par"
+  "ticipant\030\001 \001(\t\022\016\n\006symbol\030\002 \001(\t\022\r\n\005price\030"
+  "\003 \001(\005\022\020\n\010quantity\030\004 \001(\r\"\034\n\005alert\022\023\n\013desc"
+  "ription\030\001 \001(\t\"\014\n\ndisconnectb\006proto3"
   ;
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_message_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_message_2eproto = {
-  false, false, 771, descriptor_table_protodef_message_2eproto, "message.proto", 
-  &descriptor_table_message_2eproto_once, nullptr, 0, 9,
+  false, false, 835, descriptor_table_protodef_message_2eproto, "message.proto", 
+  &descriptor_table_message_2eproto_once, nullptr, 0, 10,
   schemas, file_default_instances, TableStruct_message_2eproto::offsets,
   file_level_metadata_message_2eproto, file_level_enum_descriptors_message_2eproto, file_level_service_descriptors_message_2eproto,
 };
@@ -292,6 +313,7 @@ class envelope::_Internal {
   static const ::messaging::pulse& pulse_data(const envelope* msg);
   static const ::messaging::shutdown& shutdown_data(const envelope* msg);
   static const ::messaging::alert& alert_data(const envelope* msg);
+  static const ::messaging::disconnect& disconnect_data(const envelope* msg);
 };
 
 const ::messaging::subscribe&
@@ -325,6 +347,10 @@ envelope::_Internal::shutdown_data(const envelope* msg) {
 const ::messaging::alert&
 envelope::_Internal::alert_data(const envelope* msg) {
   return *msg->payload_.alert_data_;
+}
+const ::messaging::disconnect&
+envelope::_Internal::disconnect_data(const envelope* msg) {
+  return *msg->payload_.disconnect_data_;
 }
 void envelope::set_allocated_subscribe_data(::messaging::subscribe* subscribe_data) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
@@ -446,6 +472,21 @@ void envelope::set_allocated_alert_data(::messaging::alert* alert_data) {
   }
   // @@protoc_insertion_point(field_set_allocated:messaging.envelope.alert_data)
 }
+void envelope::set_allocated_disconnect_data(::messaging::disconnect* disconnect_data) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  clear_payload();
+  if (disconnect_data) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+      ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper<::messaging::disconnect>::GetOwningArena(disconnect_data);
+    if (message_arena != submessage_arena) {
+      disconnect_data = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, disconnect_data, submessage_arena);
+    }
+    set_has_disconnect_data();
+    payload_.disconnect_data_ = disconnect_data;
+  }
+  // @@protoc_insertion_point(field_set_allocated:messaging.envelope.disconnect_data)
+}
 envelope::envelope(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
@@ -498,6 +539,10 @@ envelope::envelope(const envelope& from)
     }
     case kAlertData: {
       _internal_mutable_alert_data()->::messaging::alert::MergeFrom(from._internal_alert_data());
+      break;
+    }
+    case kDisconnectData: {
+      _internal_mutable_disconnect_data()->::messaging::disconnect::MergeFrom(from._internal_disconnect_data());
       break;
     }
     case PAYLOAD_NOT_SET: {
@@ -588,6 +633,12 @@ void envelope::clear_payload() {
     case kAlertData: {
       if (GetArenaForAllocation() == nullptr) {
         delete payload_.alert_data_;
+      }
+      break;
+    }
+    case kDisconnectData: {
+      if (GetArenaForAllocation() == nullptr) {
+        delete payload_.disconnect_data_;
       }
       break;
     }
@@ -686,6 +737,14 @@ const char* envelope::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::i
       case 10:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 82)) {
           ptr = ctx->ParseMessage(_internal_mutable_alert_data(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // .messaging.disconnect disconnect_data = 11;
+      case 11:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 90)) {
+          ptr = ctx->ParseMessage(_internal_mutable_disconnect_data(), ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
@@ -793,6 +852,14 @@ uint8_t* envelope::_InternalSerialize(
         10, _Internal::alert_data(this), target, stream);
   }
 
+  // .messaging.disconnect disconnect_data = 11;
+  if (_internal_has_disconnect_data()) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(
+        11, _Internal::disconnect_data(this), target, stream);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -873,6 +940,13 @@ size_t envelope::ByteSizeLong() const {
           *payload_.alert_data_);
       break;
     }
+    // .messaging.disconnect disconnect_data = 11;
+    case kDisconnectData: {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *payload_.disconnect_data_);
+      break;
+    }
     case PAYLOAD_NOT_SET: {
       break;
     }
@@ -933,6 +1007,10 @@ void envelope::MergeFrom(const envelope& from) {
     }
     case kAlertData: {
       _internal_mutable_alert_data()->::messaging::alert::MergeFrom(from._internal_alert_data());
+      break;
+    }
+    case kDisconnectData: {
+      _internal_mutable_disconnect_data()->::messaging::disconnect::MergeFrom(from._internal_disconnect_data());
       break;
     }
     case PAYLOAD_NOT_SET: {
@@ -2799,6 +2877,45 @@ void alert::InternalSwap(alert* other) {
       file_level_metadata_message_2eproto[8]);
 }
 
+// ===================================================================
+
+class disconnect::_Internal {
+ public:
+};
+
+disconnect::disconnect(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase(arena, is_message_owned) {
+  // @@protoc_insertion_point(arena_constructor:messaging.disconnect)
+}
+disconnect::disconnect(const disconnect& from)
+  : ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  // @@protoc_insertion_point(copy_constructor:messaging.disconnect)
+}
+
+
+
+
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData disconnect::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::CopyImpl,
+    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::MergeImpl,
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*disconnect::GetClassData() const { return &_class_data_; }
+
+
+
+
+
+
+
+::PROTOBUF_NAMESPACE_ID::Metadata disconnect::GetMetadata() const {
+  return ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(
+      &descriptor_table_message_2eproto_getter, &descriptor_table_message_2eproto_once,
+      file_level_metadata_message_2eproto[9]);
+}
+
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace messaging
 PROTOBUF_NAMESPACE_OPEN
@@ -2828,6 +2945,9 @@ template<> PROTOBUF_NOINLINE ::messaging::order* Arena::CreateMaybeMessage< ::me
 }
 template<> PROTOBUF_NOINLINE ::messaging::alert* Arena::CreateMaybeMessage< ::messaging::alert >(Arena* arena) {
   return Arena::CreateMessageInternal< ::messaging::alert >(arena);
+}
+template<> PROTOBUF_NOINLINE ::messaging::disconnect* Arena::CreateMaybeMessage< ::messaging::disconnect >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::messaging::disconnect >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 

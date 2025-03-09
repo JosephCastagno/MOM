@@ -9,6 +9,8 @@ class timeout_provider_t {
  private:
      message_queue_t &m_msg_queue;
      int m_ts;
+     std::mutex m_mutex;
+     std::condition_variable m_cv;
 
      std::atomic<bool> m_running;
      std::atomic<bool> m_paused;

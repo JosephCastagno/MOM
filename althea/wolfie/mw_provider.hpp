@@ -16,7 +16,7 @@ class mw_provider_t {
      void receive_msgs(); 
      void read_msg();
      void send_msg(const messaging::envelope &msg);
-     void send_shutdown_message();
+     void send_disconnect();
 
  public:
      mw_provider_t(message_queue_t &msg_q, const std::string &ip, int port);

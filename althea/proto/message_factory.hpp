@@ -99,4 +99,10 @@ namespace message_factory {
 
         return env;
     }
+
+    inline messaging::envelope create_disconnect() {
+        messaging::envelope env;
+        env.set_topic("disconnect");
+        return env;
+    }
 } // namespace message_factory
