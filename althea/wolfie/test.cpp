@@ -6,7 +6,6 @@
 
 #include "actor.hpp"
 #include "message_queue.hpp"
-#include "../msg/message.hpp"
 #include "../proto/message.pb.h"
 #include "../proto/message_factory.hpp"
 

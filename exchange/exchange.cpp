@@ -1,4 +1,3 @@
-#include "../althea/msg/message.hpp"
 #include "exchange.hpp"
 
 static const std::string app_name = "exchange";

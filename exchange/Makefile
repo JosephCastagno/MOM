@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGS = -std=c++20 -g
 LDFLAGS = -lboost_system -lboost_thread -lboost_program_options -lprotobuf -pthread
 
-EXCHANGE_SRC_DIRS = . ../althea/wolfie ../althea/xml ../althea/msg ../althea/proto
+EXCHANGE_SRC_DIRS = . ../althea/wolfie ../althea/proto
 EXCHANGE_SOURCES = $(wildcard $(foreach dir, $(EXCHANGE_SRC_DIRS), $(dir)/*.cpp))
 
 PROTO_DIR = ../althea/proto

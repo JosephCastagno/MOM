@@ -2,8 +2,8 @@ CXX=g++
 CXXFLAGS=-std=c++20 -g 
 LDFLAGS=-lboost_system -lboost_thread -lboost_program_options -lprotobuf -pthread
 
-WOLFIE_SRC_DIRS=wolfie xml msg
-ROSEBUD_SRC_DIRS=rosebud xml msg
+WOLFIE_SRC_DIRS=wolfie
+ROSEBUD_SRC_DIRS=rosebud
 
 WOLFIE_SOURCES=$(wildcard $(foreach dir, $(WOLFIE_SRC_DIRS), $(dir)/*.cpp))
 ROSEBUD_SOURCES=$(wildcard $(foreach dir, $(ROSEBUD_SRC_DIRS), $(dir)/*.cpp))

@@ -4,7 +4,7 @@ CXXFLAGS = -std=c++20 -g
 LDFLAGS = -lboost_system -lboost_thread -lboost_program_options -lprotobuf -pthread
 
 # Directories
-ORDER_PLACER_SRC_DIRS = . ../althea/wolfie ../althea/xml ../althea/msg ../althea/proto
+ORDER_PLACER_SRC_DIRS = . ../althea/wolfie ../althea/proto
 
 # Source Files
 ORDER_PLACER_SOURCES = $(wildcard $(foreach dir, $(ORDER_PLACER_SRC_DIRS), $(dir)/*.cpp))
