@@ -8,7 +8,7 @@ actor_t::actor_t(std::string name, const std::string &ip, const int port)
       m_running(false)
 {}
 
-virtual actor_t::~actor_t() {
+actor_t::~actor_t() {
     shutdown();
 }
 
