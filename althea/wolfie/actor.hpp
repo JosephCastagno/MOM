@@ -23,7 +23,7 @@ class actor_t {
      virtual void mw_setup() = 0;
  public:
      actor_t(std::string name, const std::string &ip, const int port);
-     ~actor_t();
+     virtual ~actor_t();
 
      void start();
      void enqueue(messaging::envelope msg);
